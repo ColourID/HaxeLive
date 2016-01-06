@@ -59,7 +59,7 @@ This is the file that the code above looks at, but you can place and name it as 
 
 The Live class also provides two functions for getting the input/output streams of the application, so you can use this for completion.
 
-The completion functions are designed to aid simply aid in code editing, so you can extend your editor, or create your own. There will be a small editor in this repo (written in C#) for those on Windows for your convenience.
+The completion functions are designed to simply aid in code editing, so you can extend your editor, or create your own. There will be a small editor in this repo (written in C#) for those on Windows for your convenience.
 
 ## Submitting a Pull Request
 You can submit a pull request for one of these reasons:
