@@ -58,7 +58,6 @@ import openfl.display.StageQuality;
 import openfl.display.StageScaleMode;
 import openfl.display.Tilesheet;
 import openfl.desktop.Clipboard;
-import openfl.desktop.ClipboardFormats;
 import openfl.desktop.ClipboardTransferMode;
 import openfl.events.AccelerometerEvent;
 import openfl.events.ActivityEvent;
@@ -73,16 +72,13 @@ import openfl.events.FocusEvent;
 import openfl.events.FullScreenEvent;
 import openfl.events.GameInputEvent;
 import openfl.events.HTTPStatusEvent;
-import openfl.events.IEventDispatcher;
 import openfl.events.IOErrorEvent;
-import openfl.events.JoystickEvent;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.events.NetStatusEvent;
 import openfl.events.ProgressEvent;
 import openfl.events.SampleDataEvent;
 import openfl.events.SecurityErrorEvent;
-import openfl.events.SystemEvent;
 import openfl.events.TextEvent;
 import openfl.events.TimerEvent;
 import openfl.events.TouchEvent;
@@ -112,12 +108,9 @@ import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import openfl.text.TextLineMetrics;
-import openfl.ui.Acceleration;
-import openfl.ui.Accelerometer;
 import openfl.ui.GameInput;
 import openfl.ui.GameInputControl;
 import openfl.ui.GameInputDevice;
-import openfl.ui.KeyLocation;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 import openfl.ui.Multitouch;
@@ -126,24 +119,44 @@ import openfl.ui.MultitouchInputMode;
 import hscript.Interp;
 import hscript.Parser;
 
-class Live
+import hxlive.DateCompare;
+
+#if sys
+import sys.io.File;
+import sys.FileSystem;
+#end
+
+class Live extends Sprite
 {
     
     private var _parser:Parser;
     private var _interp:Interp;
+    private var _lastTime:Date;
+    private var _file:String;
     
-	public function new(addTypes:Array<Dynamic>)
+	public function new(file:String, addTypes:Array<Dynamic> = null)
     {
+        super();
+        
         _parser = new Parser();
         _interp = new Interp();
+        
+        _file = file;
         
         _parser.allowJSON = true;
         _parser.allowTypes = true;
         
-        for (i in 0...addTypes.length)
-        {   
-            _interp.variables.set(addTypes[i], addTypes[i + 1]);
-            i++;
+        _lastTime = Date.now();
+        
+        if (addTypes != null)
+        {
+            for (i in 0...addTypes.length)
+            {   
+                if (i % 2 == 1)
+                    continue;
+                
+                _interp.variables.set(addTypes[i], addTypes[i + 1]);
+            }
         }
         
         _interp.variables.set("Assets", Assets);
@@ -177,7 +190,6 @@ class Live
         _interp.variables.set("StageScaleMode", StageScaleMode);
         _interp.variables.set("Tilesheet", Tilesheet);
         _interp.variables.set("Clipboard", Clipboard);
-        _interp.variables.set("ClipboardFormats", ClipboardFormats);
         _interp.variables.set("ClipboardTransferMode", ClipboardTransferMode);
         _interp.variables.set("AccelerometerEvent", AccelerometerEvent);
         _interp.variables.set("ActivityEvent", ActivityEvent);
@@ -192,16 +204,13 @@ class Live
         _interp.variables.set("FullScreenEvent", FullScreenEvent);
         _interp.variables.set("GameInputEvent", GameInputEvent);
         _interp.variables.set("HTTPStatusEvent", HTTPStatusEvent);
-        _interp.variables.set("IEventDispatcher", IEventDispatcher);
         _interp.variables.set("IOErrorEvent", IOErrorEvent);
-        _interp.variables.set("JoystickEvent", JoystickEvent);
         _interp.variables.set("KeyboardEvent", KeyboardEvent);
         _interp.variables.set("MouseEvent", MouseEvent);
         _interp.variables.set("NetStatusEvent", NetStatusEvent);
         _interp.variables.set("ProgressEvent", ProgressEvent);
         _interp.variables.set("SampleDataEvent", SampleDataEvent);
         _interp.variables.set("SecurityErrorEvent", SecurityErrorEvent);
-        _interp.variables.set("SystemEvent", SystemEvent);
         _interp.variables.set("TextEvent", TextEvent);
         _interp.variables.set("TimerEvent", TimerEvent);
         _interp.variables.set("TouchEvent", TouchEvent);
@@ -231,12 +240,9 @@ class Live
         _interp.variables.set("TextFormat", TextFormat);
         _interp.variables.set("TextFormatAlign", TextFormatAlign);
         _interp.variables.set("TextLineMetrics", TextLineMetrics);
-        _interp.variables.set("Acceleration", Acceleration);
-        _interp.variables.set("Accelerometer", Accelerometer);
         _interp.variables.set("GameInput", GameInput);
         _interp.variables.set("GameInputControl", GameInputControl);
         _interp.variables.set("GameInputDevice", GameInputDevice);
-        _interp.variables.set("KeyLocation", KeyLocation);
         _interp.variables.set("Keyboard", Keyboard);
         _interp.variables.set("Mouse", Mouse);
         _interp.variables.set("Multitouch", Multitouch);
@@ -245,6 +251,22 @@ class Live
         _interp.variables.set("stage", Lib.current.stage);
         _interp.variables.set("__clientWidth", Lib.current.stage.stageWidth);
         _interp.variables.set("__clientHeight", Lib.current.stage.stageHeight);
+        
+        _interp.variables.set("addChild", addChild);
+        
+        addEventListener(Event.ENTER_FRAME, enterFrame);
+    }
+    
+    private function enterFrame(e:Event):Void 
+    {
+        #if sys
+        var time = FileSystem.stat(_file).mtime;
+        
+        if (DateCompare.compare(time, _lastTime) != 0)
+        {
+            parseCode(_file);
+        }
+        #end
     }
     
     public function requestCompletion():Array<String>
@@ -271,7 +293,8 @@ class Live
         try
         {
             var parsed = _parser.parseString(code);
-            return parsed;
+            removeChildren();
+            _interp.execute(parsed);
         }
         catch (msg:String)
         {
@@ -280,14 +303,7 @@ class Live
             #else
             trace(msg);
             #end
-            
-            return null;
         }
-    }
-    
-    public function execute(ast:Expr)
-    {
-        _interp.execute(ast);
     }
     
 }
