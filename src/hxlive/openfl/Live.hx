@@ -247,6 +247,7 @@ class Live extends Sprite
         _interp.variables.set("Mouse", Mouse);
         _interp.variables.set("Multitouch", Multitouch);
         _interp.variables.set("MultitouchInputMode", MultitouchInputMode);
+        _interp.variables.set("g", graphics);
         
         _interp.variables.set("stage", Lib.current.stage);
         _interp.variables.set("__clientWidth", Lib.current.stage.stageWidth);
@@ -264,7 +265,28 @@ class Live extends Sprite
         
         if (DateCompare.compare(time, _lastTime) != 0)
         {
-            parseCode(_file);
+            _lastTime = time;
+            
+            var parsed = parseCode(Assets.getText(_file));
+            
+            try
+            {
+                if (parsed != null)
+                {
+                    graphics.clear();
+                    removeChildren();
+                    execute(parsed);
+                }
+            }
+            catch (msg:String)
+            {
+                #if sys
+                Sys.stderr().writeString("ERROR: " + msg);
+                #else
+                trace(msg);
+                #end
+            }
+            
         }
         #end
     }
@@ -293,8 +315,7 @@ class Live extends Sprite
         try
         {
             var parsed = _parser.parseString(code);
-            removeChildren();
-            _interp.execute(parsed);
+            return parsed;
         }
         catch (msg:String)
         {
@@ -303,7 +324,14 @@ class Live extends Sprite
             #else
             trace(msg);
             #end
+            
+            return null;
         }
+    }
+    
+    public function execute(ast:Expr)
+    {
+        _interp.execute(ast);
     }
     
 }
