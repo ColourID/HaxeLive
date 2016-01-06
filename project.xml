@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<meta title="HaxeLive" package="HaxeLive" version="1.0.0" company="tienery" />
+	
+	<app main="Main" file="HaxeLive" path="bin" />
+	
+	<window background="#FFFFFF" fps="60" />
+	<window width="800" height="480" unless="mobile" />
+	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
+	
+	<source path="src" />
+	<haxelib name="openfl" />
+	<haxelib name="hscript" />
+	
+	<icon path="assets/openfl.svg" />
+	<assets path="assets/img" rename="img" />
+	<assets path="assets/font" rename="font" />
+	<assets path="assets/info" rename="info" />
+	
+</project>
