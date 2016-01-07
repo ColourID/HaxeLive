@@ -1,0 +1,22 @@
+{
+    "instanceType": "MyCustomSprite",
+    "name": "CustomSprite",
+    "contents": [
+       {
+           "type": "Text",
+           "fontFile": "font/OpenSans-Regular.ttf",
+           "fontSize": 12,
+           "fontColor": 255,
+           "selectable": false,
+           "multiline": true,
+           "wordWrap": true,
+           "alpha": 1,
+           "text": "Hello, there! How are you?",
+           "fieldType": 0,
+           "autoSize": 0,
+           "width": 300,
+           "height": 200,
+           "align": 0
+       }
+    ]
+}

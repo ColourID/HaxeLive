@@ -1,0 +1,12 @@
+{
+    "requires": [ "info/test.json" ],
+    "instanceType": "MyCustomScene",
+    "name": "CustomScene",
+    "contents": [
+        {
+            "type": "MyCustomSprite",
+            "x": 50,
+            "y": 50
+        }
+    ]
+}
