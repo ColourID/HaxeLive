@@ -184,10 +184,11 @@ class SceneGen
         var button = new SimpleButton(new Bitmap(Assets.getBitmapData(smb.upStateSource)),
                                         new Bitmap(Assets.getBitmapData(smb.overStateSource)),
                                         new Bitmap(Assets.getBitmapData(smb.downStateSource)));
+                                        
         if (smb.hitTestSource != null)
             button.hitTestState = new Bitmap(Assets.getBitmapData(smb.hitTestSource));
         
-        button.alpha = smb.alpha;
+        button.alpha = smb.alpha != null ? smb.alpha : 1;
         
         return button;
     }
@@ -195,7 +196,7 @@ class SceneGen
     private static function createBitmap(bmp:Dynamic):Bitmap
     {
         var bitmap = new Bitmap(Assets.getBitmapData(bmp.bitmapSource));
-        bitmap.alpha = bmp.alpha;
+        bitmap.alpha = bmp.alpha != null ? bmp.alpha : 1;
         return bitmap;
     }
     
@@ -204,11 +205,11 @@ class SceneGen
         var txt = new TextField();
         txt.defaultTextFormat = new TextFormat(Assets.getFont(text.fontFile).fontName, text.fontSize, text.fontColor);
         txt.embedFonts = true;
-        txt.selectable = text.selectable;
-        txt.multiline = text.multiline;
-        txt.wordWrap = text.wordWrap;
-        txt.alpha = text.alpha;
-        txt.text = text.text;
+        txt.selectable = text.selectable != null ? text.selectable : false;
+        txt.multiline = text.multiline != null ? text.multiline : false;
+        txt.wordWrap = text.wordWrap != null ? text.wordWrap : false;
+        txt.alpha = text.alpha != null ? text.alpha : 1;
+        txt.text = text.text != null ? text.text : "Example Text Field";
         
         switch (text.fieldType)
         {
