@@ -1,0 +1,10 @@
+{
+    "name": "hxlive",
+    "description": "A live preview utility library for providing instant feedback for many targets and frameworks.",
+    "url": "https://github.com/tienery/HaxeLive",
+    "license": "MIT",
+    "version": "1.0.0",
+    "classpath": "src/"
+    "tags": [ "utility" ]
+    "contributors": [ "tienery" ]
+}

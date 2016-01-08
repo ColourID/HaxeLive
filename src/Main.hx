@@ -1,6 +1,6 @@
 package;
 
-import hxlive.openfl.Live;
+import hxlive.Live;
 import openfl.events.Event;
 import openfl.display.Sprite;
 import openfl.Lib;

@@ -6,7 +6,7 @@ This library parses JSON-formatted files into generated scenes that can be live-
 
 In Main.hx, we have the following code to help us with the live preview capabilities:
     
-    import hxlive.openfl.Live;
+    import hxlive.Live;
     import openfl.display.Sprite;
 
     class Main extends Sprite
