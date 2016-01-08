@@ -31,8 +31,8 @@ class DateCompare
 
 	public static function compare(d1:Date, d2:Date)
 	{
-		var d1Result = d1.getSeconds() * d1.getMinutes() * d1.getHours();
-		var d2Result = d2.getSeconds() * d2.getMinutes() * d2.getHours();
+		var d1Result = d1.getSeconds() + d1.getMinutes() * 60 + d1.getHours() * 3600;
+		var d2Result = d2.getSeconds() + d2.getMinutes() * 60 + d2.getHours() * 3600;
 		
 		if (d1Result > d2Result)
 			return 1;
