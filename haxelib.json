@@ -4,7 +4,7 @@
     "url": "https://github.com/tienery/HaxeLive",
     "license": "MIT",
     "version": "1.0.0",
-    "classpath": "src/"
-    "tags": [ "utility" ]
+    "classpath": "src/",
+    "tags": [ "utility" ],
     "contributors": [ "tienery" ]
 }
