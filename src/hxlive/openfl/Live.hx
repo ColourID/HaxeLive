@@ -145,6 +145,10 @@ class Live extends Sprite
             for (i in 0...data.requires.length + 1)
                 _lastTime.push(Date.now());
         }
+		else
+		{
+			_lastTime.push(Date.now());
+		}
         
         addEventListener(Event.ENTER_FRAME, enterFrame);
     }
