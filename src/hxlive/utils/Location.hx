@@ -33,12 +33,12 @@ class Location
     public static inline function screenFromTop(obj:DisplayObject, offset:Float = 0)
 	{
         obj.x = Lib.current.stage.stageWidth / 2 - obj.width;
-        obj.y = obj.height - offset;
+        obj.y = offset;
 	}
     
     public static inline function screenFromLeft(obj:DisplayObject, offset:Float = 0)
     {
-        obj.x = obj.width - offset;
+        obj.x = offset;
         obj.y = Lib.current.stage.stageHeight / 2 - obj.height;
     }
     
