@@ -30,16 +30,28 @@ class Location
         obj.y = of.y + of.height + padding;
     }
     
-    public static inline function screenFromTop(obj:DisplayObject, offset:Float = 0) 
-    return new Point(obj.x, obj.y - obj.height - offset);
+    public static inline function screenFromTop(obj:DisplayObject, offset:Float = 0)
+	{
+        obj.x = 0;
+        obj.y = obj.height - offset;
+	}
     
     public static inline function screenFromLeft(obj:DisplayObject, offset:Float = 0)
-    return new Point(obj.x - obj.width - offset, obj.y);
+    {
+        obj.x = obj.width - offset;
+        obj.y = 0;
+    }
     
     public static inline function screenFromRight(obj:DisplayObject, offset:Float = 0)
-    return new Point(obj.x + obj.width + offset, obj.y);
+    {
+        obj.x = obj.width + offset - Lib.current.stage.stageWidth;
+        obj.y = Lib.current.stage.stageHeight / 2 - obj.height;
+    }
     
     public static inline function screenFromBottom(obj:DisplayObject, offset:Float = 0)
-    return new Point(obj.x, obj.y + obj.height + offset);
+    {
+        obj.y = obj.height + offset - Lib.current.stage.stageHeight;
+        obj.x = Lib.current.stage.stageWidth / 2 - obj.width;
+    }
     
 }
