@@ -26,7 +26,6 @@ SOFTWARE.
 
 package hxlive.openfl;
 
-import hscript.Expr;
 import openfl.Assets;
 import openfl.Lib;
 import openfl.display.Application;
