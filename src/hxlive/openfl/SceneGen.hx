@@ -98,6 +98,12 @@ class SceneGen
                 var padding = 2;
                 if (items[i].padding != null)
                     padding = items[i].padding;
+                    
+                if (items[i].width != null)
+                    obj.width = items[i].width;
+                
+                if (items[i].height != null)
+                    obj.height = items[i].height;
                 
                 if (items[i].flow != null && Std.is(obj, Sprite))
                 {
@@ -165,11 +171,6 @@ class SceneGen
                 if (items[i].y != null)
                     obj.y = items[i].y;
                 
-                if (items[i].width != null)
-                    obj.width = items[i].width;
-                
-                if (items[i].height != null)
-                    obj.height = items[i].height;
             }
         }
         
