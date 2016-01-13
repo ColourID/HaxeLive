@@ -33,6 +33,7 @@ import openfl.display.Sprite;
 import hxlive.DateCompare;
 
 import haxe.Json;
+import haxe.CallStack;
 
 #if sys
 import sys.io.File;
@@ -44,6 +45,7 @@ class Live extends Sprite
     
     private var _lastTime:Array<Date>;
     private var _file:String;
+    private var _activeFiles:Array<String>;
     private var data:Dynamic;
     
 	public function new(file:String)
@@ -103,18 +105,19 @@ class Live extends Sprite
         
         if (requireChange)
         {
-            try
-            {
+            //try
+            //{
                 var content = SceneGen.generate(data);
                 removeChildren();
                 addChild(content);
                 
                 requireChange = false;
-            }
-            catch (msg:String)
-            {
-                trace(msg);
-            }
+            //}
+            //catch (msg:String)
+            //{
+                //trace(CallStack.toString(CallStack.callStack()));
+                //trace(msg);
+            //}
         }
         #end
     }

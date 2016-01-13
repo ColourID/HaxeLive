@@ -1,22 +1,26 @@
 {
     "instanceType": "MyCustomSprite",
     "name": "CustomSprite",
+    "theme": "info/theme.json",
     "contents": [
-       {
+        {
+           "type": "SimpleButton",
+           "styleName": "ui",
+           "styleValue": [ "Button", "ButtonOver", "ButtonDown" ]
+        },
+        {
            "type": "Text",
-           "fontFile": "font/OpenSans-Regular.ttf",
-           "fontSize": 12,
-           "fontColor": 255,
+           "styleName": "textNormal",
            "selectable": false,
            "multiline": true,
            "wordWrap": true,
            "alpha": 1,
            "text": "Hello, there! How are you?",
            "fieldType": 0,
-           "autoSize": 0,
+           "autoSize": 1,
            "width": 300,
            "height": 200,
            "align": 0
-       }
+        }
     ]
 }

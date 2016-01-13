@@ -1,8 +1,13 @@
 package hxlive.openfl;
 import openfl.display.Bitmap;
+import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.SimpleButton;
 import openfl.display.Sprite;
+import openfl.display.Tilemap;
+import openfl.display.Tilesheet;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFieldType;
@@ -19,11 +24,17 @@ class SceneGen
 {
     
     private static var __types:Map<String, Sprite>;
+    private static var __styles:Dynamic;
+    private static var __spritesheet:BitmapData;
+    private static var __spritemap:Map<String, BitmapData>;
 
     public static function generate(data:Dynamic):Sprite
     {
         if (__types == null)
             __types = new Map<String, Sprite>();
+        
+        if (__spritemap == null)
+            __spritemap = new Map<String, BitmapData>();
         
         return createSprite(data);
     }
@@ -42,6 +53,12 @@ class SceneGen
             }
         }
         
+        //If using a theme, get it and add to global `__styles` to use later.
+        if (sp.theme != null)
+        {
+            __styles = Json.parse(Assets.getText(sp.theme));
+        }
+        
         var items = new Array<Dynamic>();
         
         if (sp.contents != null)
@@ -54,9 +71,21 @@ class SceneGen
                 
                 var obj:DisplayObject = null;
                 
+                var style:Dynamic = null;
+                
+                if (item.styleName != null)
+                {
+                    style = Reflect.field(__styles, item.styleName);
+                    
+                    if (style != null)
+                    {
+                        setupSpritesheet(style);
+                    }
+                }
+                
                 if (item.type == "SimpleButton")
                 {
-                    obj = createSimpleButton(item);
+                    obj = createSimpleButton(item, style);
                 }
                 else if (item.type == "Bitmap")
                 {
@@ -64,7 +93,7 @@ class SceneGen
                 }
                 else if (item.type == "Text")
                 {
-                    obj = createText(item);
+                    obj = createText(item, style);
                 }
                 else if (item.type == "Sprite")
                 {
@@ -180,14 +209,47 @@ class SceneGen
         return sprite;
     }
     
-    private static function createSimpleButton(smb:Dynamic):SimpleButton
+    private static function createSimpleButton(smb:Dynamic, style:Dynamic = null):SimpleButton
     {
-        var button = new SimpleButton(new Bitmap(Assets.getBitmapData(smb.upStateSource)),
-                                        new Bitmap(Assets.getBitmapData(smb.overStateSource)),
-                                        new Bitmap(Assets.getBitmapData(smb.downStateSource)));
-                                        
-        if (smb.hitTestSource != null)
-            button.hitTestState = new Bitmap(Assets.getBitmapData(smb.hitTestSource));
+        var upState:Bitmap = null;
+        var overState:Bitmap = null;
+        var downState:Bitmap = null;
+        var hitTestState:Bitmap = null;
+        
+        if (style != null)
+        {
+            if (style.type == "basic")
+            {
+                upState = new Bitmap(Assets.getBitmapData(style.bmpUpStateSource));
+                
+                if (style.bmpOverStateSource != null)
+                    overState = new Bitmap(Assets.getBitmapData(style.bmpOverStateSource));
+                
+                if (style.bmpDownStateSource != null)
+                    downState = new Bitmap(Assets.getBitmapData(style.bmpDownStateSource));
+                
+                if (style.bmpHitTestStateSource != null)
+                    hitTestState = new Bitmap(Assets.getBitmapData(style.bmpHitTestStateSource));
+            }
+            else if (style.type == "spritesheet")
+            {
+                upState = new Bitmap(__spritemap.get(smb.styleValue[0]));
+                
+                if (smb.styleValue[1] != null)
+                    overState = new Bitmap(__spritemap.get(smb.styleValue[1]));
+                
+                if (smb.styleValue[2] != null)
+                    downState = new Bitmap(__spritemap.get(smb.styleValue[2]));
+                
+                if (smb.styleValue[3] != null)
+                    hitTestState = new Bitmap(__spritemap.get(smb.styleValue[3]));
+            }
+        }
+        
+        var button = new SimpleButton(upState, overState, downState);
+        
+        if (hitTestState != null)
+            button.hitTestState = hitTestState;
         
         button.alpha = smb.alpha != null ? smb.alpha : 1;
         
@@ -201,10 +263,27 @@ class SceneGen
         return bitmap;
     }
     
-    private static function createText(text:Dynamic):TextField
+    private static function createText(text:Dynamic, style:Dynamic = null):TextField
     {
+        var fontFile = "";
+        var fontSize:Int = 0;
+        var fontColor:Int = 0;
+        
+        if (style != null)
+        {
+            fontFile = style.fontFile;
+            fontSize = style.fontSize;
+            fontColor = style.fontColor;
+        }
+        else
+        {
+            fontFile = text.fontFile == null ? "font/OpenSans-Regular.ttf" : text.fontFile;
+            fontSize = text.fontSize == null ? 11 : text.fontSize;
+            fontColor = text.fontColor == null ? 0x000000 : text.fontColor;
+        }
+        
         var txt = new TextField();
-        txt.defaultTextFormat = new TextFormat(Assets.getFont(text.fontFile).fontName, text.fontSize, text.fontColor);
+        txt.defaultTextFormat = new TextFormat(Assets.getFont(fontFile).fontName, fontSize, fontColor);
         txt.embedFonts = true;
         txt.selectable = text.selectable != null ? text.selectable : false;
         txt.multiline = text.multiline != null ? text.multiline : false;
@@ -237,6 +316,31 @@ class SceneGen
         }
         
         return txt;
+    }
+    
+    private static function setupSpritesheet(style:Dynamic)
+    {
+        if (style.type == "spritesheet")
+        {
+            if (__spritesheet == null)
+                __spritesheet = Assets.getBitmapData(style.source);
+            else
+                return;
+            
+            var setup = Reflect.fields(style.setup);
+            
+            for (i in 0...setup.length)
+            {
+                var field:Dynamic = Reflect.field(style.setup, setup[i]);
+                
+                var data = new BitmapData(field.width, field.height);
+                data.copyPixels(__spritesheet, new Rectangle(field.x, field.y, field.width, field.height), new Point(0, 0));
+                
+                __spritemap.set(setup[i], data);
+            }
+            
+            trace(__spritemap.keys());
+        }
     }
     
 }

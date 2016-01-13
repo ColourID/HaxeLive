@@ -1,0 +1,38 @@
+{
+    "textNormal": {
+        "type": "basic",
+        "fontFile": "font/OpenSans-Regular.ttf",
+        "fontSize": 12,
+        "fontColor": 255
+    },
+    "textHeading": {
+        "type": "basic",
+        "fontFile": "font/OpenSans-Regular.ttf",
+        "fontSize": 15,
+        "fontColor": 255
+    },
+    "ui": {
+        "type": "spritesheet",
+        "source": "img/light.png",
+        "setup": {
+            "Button": {
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 32
+            },
+            "ButtonOver": {
+                "x": 128,
+                "y": 0,
+                "width": 128,
+                "height": 32
+            },
+            "ButtonDown": {
+                "x": 0,
+                "y": 32,
+                "width": 128,
+                "height": 32
+            }
+        }
+    }
+}
