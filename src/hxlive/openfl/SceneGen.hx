@@ -339,7 +339,6 @@ class SceneGen
                 __spritemap.set(setup[i], data);
             }
             
-            trace(__spritemap.keys());
         }
     }
     

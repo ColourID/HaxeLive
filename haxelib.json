@@ -4,8 +4,12 @@
 	"license": "MIT",
 	"tags": ["utility"],
 	"description": "Provides live previewing and scene generation for many targets and frameworks.",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"classPath": "src/",
-	"releasenote": "Initial release.",
+	"releasenote": "Added theme support.",
+    "dependencies": {
+        "openfl": "3.4.0",
+        "lime": "2.7.0"
+    },
 	"contributors": ["tienery"]
 }

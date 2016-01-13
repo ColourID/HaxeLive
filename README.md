@@ -1,6 +1,8 @@
 # HaxeLive
 HaxeLive is a library that currently supports OpenFL in bringing live preview capabilities.
 
+**Note** `SimpleButton`'s in OpenFL does not function correctly as implemented in our code. We are working on whether or not this is an OpenFL issue or specific to the codebase and find a solution. For now, the code works in version 3.4, so if you need SimpleButton's to function properly, that's the version we recommend to use.
+
 ## Using this library
 This library parses JSON-formatted files into generated scenes that can be live-previewed for fast prototyping, as well as redistributed and reused for your projects.
 
