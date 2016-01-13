@@ -1,0 +1,6 @@
+<project>
+    
+    <assets path="assets/font" rename="font" />
+    <assets path="assets/img" rename="img" />
+    
+</project>

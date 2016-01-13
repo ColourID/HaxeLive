@@ -16,9 +16,9 @@ import openfl.Assets;
 
 import haxe.Json;
 
-import hxlive.utils.Alignment;
-import hxlive.utils.Flow;
-import hxlive.utils.Location;
+import hxlive.utils.openfl.Alignment;
+import hxlive.utils.openfl.Flow;
+import hxlive.utils.openfl.Location;
 
 class SceneGen
 {

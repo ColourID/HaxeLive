@@ -1,15 +1,10 @@
 {
     "name": "hxlive",
-	"url" : "https://github.com/tienery/HaxeLive",
+	"url" : "https://github.com/ColourID/HaxeLive",
 	"license": "MIT",
 	"tags": ["utility"],
 	"description": "Provides live previewing and scene generation for many targets and frameworks.",
-	"version": "1.1.0",
-	"classPath": "src/",
-	"releasenote": "Added theme support.",
-    "dependencies": {
-        "openfl": "3.4.0",
-        "lime": "2.7.0"
-    },
+	"version": "1.1.1",
+	"releasenote": "Code cleanup.",
 	"contributors": ["tienery"]
 }

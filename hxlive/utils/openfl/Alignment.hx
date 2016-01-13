@@ -1,4 +1,4 @@
-package hxlive.utils;
+package hxlive.utils.openfl;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.Lib;

@@ -1,4 +1,4 @@
-package hxlive.utils;
+package hxlive.utils.openfl;
 import openfl.geom.Point;
 import openfl.display.DisplayObject;
 import openfl.Lib;
