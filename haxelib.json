@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": ["utility"],
 	"description": "Provides live previewing and scene generation for many targets and frameworks.",
-	"version": "1.1.1",
-	"releasenote": "Code cleanup.",
+	"version": "1.1.2",
+	"releasenote": "Update for haxelib 1.1.2.",
 	"contributors": ["tienery"]
 }
