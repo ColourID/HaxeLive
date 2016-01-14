@@ -43,9 +43,9 @@ import sys.FileSystem;
 class Live extends Sprite
 {
     
-    private var _lastTime:Array<Date>;
+    private var _lastTime:Date;
     private var _file:String;
-    private var _activeFiles:Array<String>;
+    private var _activeFiles:Array<FileTimeInfo>;
     private var data:Dynamic;
     
 	public function new(file:String)
@@ -55,17 +55,12 @@ class Live extends Sprite
         _file = file;
         data = Json.parse(Assets.getText(_file));
         
-        _lastTime = [];
+        _lastTime = Date.now();
+        _activeFiles = [];
+      
+        setupLinkedFiles(file);
         
-        if (data.requires != null)
-        {
-            for (i in 0...data.requires.length + 1)
-                _lastTime.push(Date.now());
-        }
-		else
-		{
-			_lastTime.push(Date.now());
-		}
+        trace(_activeFiles);
         
         addEventListener(Event.ENTER_FRAME, enterFrame);
     }
@@ -77,53 +72,78 @@ class Live extends Sprite
         
         var time = FileSystem.stat(_file).mtime;
         
-        if (DateCompare.compare(time, _lastTime[0]) != 0)
+        if (DateCompare.compare(time, _lastTime) != 0)
         {
-            _lastTime[0] = time;
+            _lastTime = time;
             
             data = Json.parse(Assets.getText(_file));
             
             requireChange = true;
         }
         
-        if (data.requires != null)
+        for (i in 0..._activeFiles.length)
         {
-            for (i in 0...data.requires.length)
+            var file = _activeFiles[i];
+            
+            var mtime = FileSystem.stat(file.file).mtime;
+            
+            if (DateCompare.compare(mtime, file.time) != 0)
             {
-                var file:Dynamic = data.requires[i];
+                file.time = mtime;
                 
-                var mtime = FileSystem.stat(file).mtime;
-                
-                if (DateCompare.compare(mtime, _lastTime[i + 1]) != 0)
-                {
-                    _lastTime[i + 1] = mtime;
-                    
-                    requireChange = true;
-                }
+                requireChange = true;
             }
         }
         
         if (requireChange)
         {
-            //try
-            //{
+            try
+            {
                 var content = SceneGen.generate(data);
                 removeChildren();
                 addChild(content);
                 
                 requireChange = false;
-            //}
-            //catch (msg:String)
-            //{
-                //trace(CallStack.toString(CallStack.callStack()));
-                //trace(msg);
-            //}
+            }
+            catch (msg:String)
+            {
+                trace(CallStack.toString(CallStack.callStack()));
+                trace(msg);
+            }
         }
         #end
     }
-    
-    
 
+    private function setupLinkedFiles(file:String)
+    {
+        var parsed:Dynamic = Json.parse(Assets.getText(file));
+        
+        _activeFiles.push(new FileTimeInfo(file, Date.now()));
+        
+        if (parsed.theme != null)
+        {
+            _activeFiles.push(new FileTimeInfo(parsed.theme, Date.now()));
+        }
+        
+        if (parsed.requires != null)
+        {
+            for (i in 0...parsed.requires.length)
+                setupLinkedFiles(parsed.requires[i]);
+        }
+    }
     
+}
+
+class FileTimeInfo
+{
+    
+    public var file:String;
+    public var time:Date;
+    
+    public function new (file:String, time:Date)
+    {
+        this.time = time;
+        this.file = file;
+    }
     
 }
