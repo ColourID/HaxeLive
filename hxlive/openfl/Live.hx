@@ -45,22 +45,36 @@ class Live extends Sprite
     
     private var _lastTime:Date;
     private var _file:String;
+    private var _configFile:String;
     private var _activeFiles:Array<FileTimeInfo>;
     private var data:Dynamic;
     
-	public function new(file:String)
+	public function new(config:String)
     {
         super();
         
-        _file = file;
-        data = Json.parse(Assets.getText(_file));
-        
         _lastTime = Date.now();
         _activeFiles = [];
+        
+        _configFile = config;
       
-        setupLinkedFiles(file);
+        setupConfig(config);
         
         addEventListener(Event.ENTER_FRAME, enterFrame);
+    }
+    
+    private function setupConfig(config:String)
+    {
+        var configData:Dynamic = Json.parse(Assets.getText(config));
+        _file = configData.file;
+        
+        #if sys
+        data = Json.parse(File.getContent(_file));
+        #else
+        data = Json.parse(Assets.getText(_file));
+        #end
+        
+        _activeFiles.push(new FileTimeInfo(_configFile, Date.now()));
     }
     
     private function enterFrame(e:Event):Void 
@@ -74,20 +88,24 @@ class Live extends Sprite
         {
             _lastTime = time;
             
-            data = Json.parse(Assets.getText(_file));
+            data = Json.parse(File.getContent(_file));
             
             requireChange = true;
         }
         
         for (i in 0..._activeFiles.length)
         {
-            var file = _activeFiles[i];
+            if (requireChange)
+                break;
             
-            var mtime = FileSystem.stat(file.file).mtime;
+            var mtime = FileSystem.stat(_activeFiles[i].file).mtime;
             
-            if (DateCompare.compare(mtime, file.time) != 0)
+            if (DateCompare.compare(mtime, _activeFiles[i].time) != 0)
             {
-                file.time = mtime;
+                _activeFiles[i].time = mtime;
+                
+                if (_activeFiles[i].file == _configFile)
+                    setupConfig(_configFile);
                 
                 requireChange = true;
             }

@@ -5,8 +5,8 @@
     "contents": [
         {
             "type": "MyCustomSprite",
-            "x": 50,
-            "y": 50
+            "x": 30,
+            "y": 30
         }
     ]
 }

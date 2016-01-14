@@ -15,7 +15,7 @@ class Main extends Sprite
 	{
 		super();
 		
-		live = new Live("info/MyBase.json");
+		live = new Live("info/config.json");
         
         addChild(live);
 	}

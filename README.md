@@ -15,23 +15,31 @@ In Main.hx, we have the following code to help us with the live preview capabili
     {
 
         private var live:Live;
-        private var _lastTime:Date;
         
         public function new()
         {
             super();
             
-            live = new Live("info/test.json");
+            live = new Live("info/config.json");
             
             addChild(live);
         }
 
     }
 
+`config.json` is required to make configuration settings with HaxeLive. This is now required, as it will help to provide a more robust way of switching between scenes without needing to recompile your application to test them. The configuration file is only used with the `Live` class. Nothing has changed with `SceneGen` so your codebase should remain the same in that regard.
+
+An example of the configuration file may look something like this:
+    
+    {
+        
+        "file": "info/MyBase.json"
+        
+    }
+
 All of the parsing, scene generation and previewing is done automatically.
 
-Once you have designed an interface you like, you can use the `SceneGen` class, followed by the
-`generate` function that takes the parsed data from a JSON file.
+Once you have designed an interface you like, you can use the `SceneGen` class, followed by the `generate` function that takes the parsed data from a JSON file.
 
 ## Documentation
 Because there is a lot of information regarding this library, please consult the [wiki](https://github.com/tienery/HaxeLive/wiki).
