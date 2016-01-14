@@ -60,8 +60,6 @@ class Live extends Sprite
       
         setupLinkedFiles(file);
         
-        trace(_activeFiles);
-        
         addEventListener(Event.ENTER_FRAME, enterFrame);
     }
     
