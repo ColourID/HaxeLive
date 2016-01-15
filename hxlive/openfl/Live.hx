@@ -113,19 +113,19 @@ class Live extends Sprite
         
         if (requireChange)
         {
-            //try
-            //{
+            try
+            {
                 var content = SceneGen.generate(data);
                 removeChildren();
                 addChild(content);
                 
                 requireChange = false;
-            //}
-            //catch (msg:String)
-            //{
-                //trace(CallStack.toString(CallStack.callStack()));
-                //trace(msg);
-            //}
+            }
+            catch (msg:String)
+            {
+                trace(CallStack.toString(CallStack.callStack()));
+                trace(msg);
+            }
         }
         #end
     }
