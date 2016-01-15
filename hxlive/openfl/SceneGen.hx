@@ -19,6 +19,7 @@ import haxe.Json;
 import hxlive.utils.openfl.Alignment;
 import hxlive.utils.openfl.Flow;
 import hxlive.utils.openfl.Location;
+import hxlive.utils.Color;
 
 class SceneGen
 {
@@ -273,13 +274,13 @@ class SceneGen
         {
             fontFile = style.fontFile;
             fontSize = style.fontSize;
-            fontColor = style.fontColor;
+            fontColor = getColorValue(style.fontColor);
         }
         else
         {
             fontFile = text.fontFile == null ? "font/OpenSans-Regular.ttf" : text.fontFile;
             fontSize = text.fontSize == null ? 11 : text.fontSize;
-            fontColor = text.fontColor == null ? 0x000000 : text.fontColor;
+            fontColor = text.fontColor == null ? 0x000000 : getColorValue(text.fontColor);
         }
         
         var txt = new TextField();
@@ -340,6 +341,29 @@ class SceneGen
             }
             
         }
+    }
+    
+    private static function getColorValue(value:Dynamic):Int
+    {
+        var result:Int = 0;
+        
+        if (Std.is(value, String))
+        {
+            var v:String = value;
+            
+            if (v.indexOf("0x") > -1)
+                result = Color.colorFromHex(v).value;
+            else
+                result = Color.colorByName(v).value;
+        }
+        else if (Reflect.isObject(value))
+        {
+            result = new Color(value.red, value.green, value.blue).value;
+        }
+        else
+            result = value;
+        
+        return result;
     }
     
 }
