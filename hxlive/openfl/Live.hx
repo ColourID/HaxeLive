@@ -29,15 +29,24 @@ package hxlive.openfl;
 import openfl.Assets;
 import openfl.events.Event;
 import openfl.display.Sprite;
+import openfl.events.KeyboardEvent;
+import openfl.ui.Keyboard;
+import openfl.Lib;
 
 import hxlive.DateCompare;
 
 import haxe.Json;
 import haxe.CallStack;
 
+#if telemetry
+import openfl.profiler.Telemetry;
+#end
+
 #if sys
 import sys.io.File;
 import sys.FileSystem;
+
+import dialogs.Dialogs;
 #end
 
 class Live extends Sprite
@@ -57,10 +66,24 @@ class Live extends Sprite
         _activeFiles = [];
         
         _configFile = config;
-      
+        
         setupConfig(config);
         
         addEventListener(Event.ENTER_FRAME, enterFrame);
+        Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, stage_onKeyUp);
+    }
+    
+    private function stage_onKeyUp(e:KeyboardEvent):Void 
+    {
+        if (e.keyCode == Keyboard.E && e.ctrlKey)
+        {
+            var result = Dialogs.save("Export...", { ext: "hx", desc: "Haxe source file" } );
+            
+            if (result != null)
+            {
+                Exporter.export(_file, result, "scenes");
+            }
+        }
     }
     
     private function setupConfig(config:String)
@@ -87,6 +110,7 @@ class Live extends Sprite
         if (DateCompare.compare(time, _lastTime) != 0)
         {
             _lastTime = time;
+            time = null;
             
             data = Json.parse(File.getContent(_file));
             
@@ -103,6 +127,7 @@ class Live extends Sprite
             if (DateCompare.compare(mtime, _activeFiles[i].time) != 0)
             {
                 _activeFiles[i].time = mtime;
+                mtime = null;
                 
                 if (_activeFiles[i].file == _configFile)
                     setupConfig(_configFile);
@@ -128,11 +153,6 @@ class Live extends Sprite
             }
         }
         #end
-    }
-    
-    private function exportCurrentlyViewedFile(dir:String)
-    {
-        Exporter.export(_file, dir + data.name + ".hx");
     }
 
     private function setupLinkedFiles(file:String)
