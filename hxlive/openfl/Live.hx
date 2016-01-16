@@ -31,8 +31,6 @@ import openfl.events.Event;
 import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
-import openfl.utils.Timer;
-import openfl.events.TimerEvent;
 import openfl.Lib;
 
 import hxlive.DateCompare;
@@ -56,7 +54,6 @@ class Live extends Sprite
     
     private static var _lastTime:Date;
     private static var _cTime:Date;
-    private var _timer:Timer;
     private var _file:String;
     private var _configFile:String;
     private static var _activeFiles:Array<FileTimeInfo>;
@@ -66,8 +63,6 @@ class Live extends Sprite
     {
         super();
         
-        _timer = new Timer(1000);
-        
         _lastTime = Date.now();
         _activeFiles = [];
         
@@ -75,10 +70,7 @@ class Live extends Sprite
         
         setupConfig(config);
         
-        _timer.addEventListener(TimerEvent.TIMER, onTimer);
-        _timer.start();
-        
-        //addEventListener(Event.ENTER_FRAME, enterFrame);
+        addEventListener(Event.ENTER_FRAME, onEnter);
         Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, stage_onKeyUp);
     }
     
@@ -110,7 +102,7 @@ class Live extends Sprite
             _activeFiles.push(new FileTimeInfo(_configFile, Date.now()));
     }
     
-    private function onTimer(e:TimerEvent):Void 
+    private function onEnter(e:Event):Void 
     {
         #if sys
         var requireChange = false;
@@ -136,7 +128,6 @@ class Live extends Sprite
             if (DateCompare.compare(mtime, _activeFiles[i].time) != 0)
             {
                 _activeFiles[i].time = mtime;
-                mtime = null;
                 
                 if (_activeFiles[i].file == _configFile)
                     setupConfig(_configFile);
