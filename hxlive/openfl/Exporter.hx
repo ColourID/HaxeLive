@@ -192,6 +192,8 @@ class Exporter
                 results += "\t";
             else
                 results += " ";
+            
+            tabsRemaining--;
         }
         
         sb.appendLine(results + value);

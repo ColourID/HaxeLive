@@ -31,6 +31,8 @@ import openfl.events.Event;
 import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
+import openfl.utils.Timer;
+import openfl.events.TimerEvent;
 import openfl.Lib;
 
 import hxlive.DateCompare;
@@ -52,15 +54,19 @@ import dialogs.Dialogs;
 class Live extends Sprite
 {
     
-    private var _lastTime:Date;
+    private static var _lastTime:Date;
+    private static var _cTime:Date;
+    private var _timer:Timer;
     private var _file:String;
     private var _configFile:String;
-    private var _activeFiles:Array<FileTimeInfo>;
+    private static var _activeFiles:Array<FileTimeInfo>;
     private var data:Dynamic;
     
 	public function new(config:String)
     {
         super();
+        
+        _timer = new Timer(1000);
         
         _lastTime = Date.now();
         _activeFiles = [];
@@ -69,7 +75,10 @@ class Live extends Sprite
         
         setupConfig(config);
         
-        addEventListener(Event.ENTER_FRAME, enterFrame);
+        _timer.addEventListener(TimerEvent.TIMER, onTimer);
+        _timer.start();
+        
+        //addEventListener(Event.ENTER_FRAME, enterFrame);
         Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, stage_onKeyUp);
     }
     
@@ -97,20 +106,20 @@ class Live extends Sprite
         data = Json.parse(Assets.getText(_file));
         #end
         
-        _activeFiles.push(new FileTimeInfo(_configFile, Date.now()));
+        if (_activeFiles == [])
+            _activeFiles.push(new FileTimeInfo(_configFile, Date.now()));
     }
     
-    private function enterFrame(e:Event):Void 
+    private function onTimer(e:TimerEvent):Void 
     {
         #if sys
         var requireChange = false;
         
-        var time = FileSystem.stat(_file).mtime;
+        _cTime = FileSystem.stat(_file).mtime;
         
-        if (DateCompare.compare(time, _lastTime) != 0)
+        if (DateCompare.compare(_cTime, _lastTime) != 0)
         {
-            _lastTime = time;
-            time = null;
+            _lastTime = _cTime;
             
             data = Json.parse(File.getContent(_file));
             
