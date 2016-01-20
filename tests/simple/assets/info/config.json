@@ -1,3 +1,7 @@
 {
-    "file": "info/test.json"
+    "file": "info/test.json",
+    "export_options": {
+        "useTabChar": false,
+        "spaces": 3
+    }
 }

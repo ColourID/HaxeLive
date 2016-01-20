@@ -46,6 +46,8 @@ class Exporter
     @:noCompletion private static var imports:Array<String>;
     @:noCompletion private static var decls:Array<Declaration>;
     @:noCompletion private static var inits:Array<String>;
+    @:noCompletion private static var theme:Dynamic;
+    @:noCompletion private static var styles:Map<String, Dynamic>;
     
     public static var options:ExportOptions;
 
@@ -57,6 +59,8 @@ class Exporter
         imports = [];
         decls = [];
         inits = [];
+        
+        styles = new Map<String, Dynamic>();
         
         var data = Json.parse(File.getContent(file));
         
@@ -82,6 +86,7 @@ class Exporter
             addProgress();
         }
         
+        results.appendLine("");
         appendLine(results, "class " + data.instanceType + " extends Sprite");
         startFolder(results);
         
@@ -106,6 +111,17 @@ class Exporter
         var results = Math.round(percent);
         
         Sys.print("\rProgress: " + results + "%"); 
+    }
+    
+    private static function setupTheme(data:Dynamic)
+    {
+        if (data.theme != null)
+            theme = Json.parse(File.getContent(data.theme));
+        
+        var styleNames = Reflect.fields(theme);
+        
+        for (i in 0...styleNames.length)
+            styles.set(styleNames[i], Reflect.field(styleNames[i]));
     }
     
     private static function generateImports(arr:Array<String>, data:Dynamic)
@@ -138,7 +154,7 @@ class Exporter
     }
     
     private static function generateDeclarations(arr:Array<Declaration>, data:Dynamic)
-    {
+    {   
         if (data.contents != null)
         {
             for (i in 0...data.contents.length)
@@ -156,7 +172,34 @@ class Exporter
                 else
                     decl.type = obj.type;
                 
+                setupInits(obj);
+                
                 arr.push(decl);
+            }
+        }
+    }
+    
+    private static function setupInits(obj:Dynamic)
+    {
+        var fields = Reflect.fields(obj);
+        
+        var type:String = obj.type;
+        
+        for (i in 0...fields.length)
+        {
+            var f = fields[i];
+            
+            if (f == "type")
+                continue;
+            
+            if (f == "styleName")
+            {
+                
+                
+                if (type == "Text")
+                {
+                    
+                }
             }
         }
     }

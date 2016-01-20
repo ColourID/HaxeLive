@@ -52,11 +52,11 @@ import dialogs.Dialogs;
 class Live extends Sprite
 {
     
-    private static var _lastTime:Date;
-    private static var _cTime:Date;
+    private var _lastTime:Date;
+    private var _cTime:Date;
     private var _file:String;
     private var _configFile:String;
-    private static var _activeFiles:Array<FileTimeInfo>;
+    private var _activeFiles:Array<FileTimeInfo>;
     private var data:Dynamic;
     
 	public function new(config:String)
@@ -91,6 +91,9 @@ class Live extends Sprite
     {
         var configData:Dynamic = Json.parse(Assets.getText(config));
         _file = configData.file;
+        
+        if (configData.export_options != null)
+            Exporter.options = configData.export_options;
         
         #if sys
         data = Json.parse(File.getContent(_file));
