@@ -20,6 +20,10 @@ import hxlive.utils.openfl.Flow;
 import hxlive.utils.openfl.Location;
 import hxlive.utils.Color;
 
+#if sys
+import sys.io.File;
+#end
+
 class SceneGen
 {
     
@@ -49,14 +53,22 @@ class SceneGen
             for (i in 0...sp.requires.length)
             {
                 var require:Dynamic = sp.requires[i];
+                #if sys
+                generate(Json.parse(File.getContent(require)));
+                #else
                 generate(Json.parse(Assets.getText(require)));
+                #end
             }
         }
         
         //If using a theme, get it and add to global `__styles` to use later.
         if (sp.theme != null)
         {
+            #if sys
+            __styles = Json.parse(File.getContent(sp.theme));
+            #else
             __styles = Json.parse(Assets.getText(sp.theme));
+            #end
         }
         
         var items = new Array<Dynamic>();
@@ -211,10 +223,10 @@ class SceneGen
     
     private static function createSimpleButton(smb:Dynamic, style:Dynamic = null):SimpleButton
     {
-        var upState:Bitmap = null;
-        var overState:Bitmap = null;
-        var downState:Bitmap = null;
-        var hitTestState:Bitmap = null;
+        var upState:Bitmap = smb.bmpUpStateSource != null ? createBitmap({ bitmapSource: smb.bmpUpStateSource }) : null;
+        var overState:Bitmap = smb.bmpOverStateSource != null ? createBitmap({ bitmapSource: smb.bmpOverStateSource }) : null;
+        var downState:Bitmap = smb.bmpDownStateSource != null ? createBitmap({ bitmapSource: smb.bmpDownStateSource }) : null;
+        var hitTestState:Bitmap = smb.bmpHitTestStateSource != null ? createBitmap({ bitmapSource: smb.bmpHitTestStateSource }) : null;
         
         if (style != null)
         {

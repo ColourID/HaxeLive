@@ -24,7 +24,8 @@ SOFTWARE.
 
 */
 
-package hxlive.openfl; 
+#if debug
+package hxlive.openfl;
 import haxe.macro.Expr;
 using haxe.macro.Tools;
 
@@ -46,3 +47,4 @@ class Exporter
     }
 
 }
+#end

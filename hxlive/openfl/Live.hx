@@ -82,7 +82,9 @@ class Live extends Sprite
             
             if (result != null)
             {
+                #if debug
                 Exporter.export(data, result);
+                #end
             }
         }
     }
