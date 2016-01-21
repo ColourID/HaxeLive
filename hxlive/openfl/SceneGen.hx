@@ -4,14 +4,13 @@ import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.SimpleButton;
 import openfl.display.Sprite;
-import openfl.display.Tilemap;
-import openfl.display.Tilesheet;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFieldType;
 import openfl.text.TextFieldAutoSize;
+import openfl.text.Font;
 import openfl.Assets;
 
 import haxe.Json;
@@ -28,7 +27,7 @@ class SceneGen
     private static var __styles:Dynamic;
     private static var __spritesheet:BitmapData;
     private static var __spritemap:Map<String, BitmapData>;
-
+    
     public static function generate(data:Dynamic):Sprite
     {
         if (__types == null)
@@ -221,16 +220,40 @@ class SceneGen
         {
             if (style.type == "basic")
             {
-                upState = new Bitmap(Assets.getBitmapData(style.bmpUpStateSource));
+                upState = new Bitmap(
+                    #if sys
+                    BitmapData.fromFile(style.bmpUpStateSource)
+                    #else
+                    Assets.getBitmapData(style.bmpUpStateSource)
+                    #end
+                    );
                 
                 if (style.bmpOverStateSource != null)
-                    overState = new Bitmap(Assets.getBitmapData(style.bmpOverStateSource));
+                    overState = new Bitmap(
+                        #if sys
+                        BitmapData.fromFile(style.bmpOverStateSource)
+                        #else
+                        Assets.getBitmapData(style.bmpOverStateSource)                        
+                        #end
+                        );
                 
                 if (style.bmpDownStateSource != null)
-                    downState = new Bitmap(Assets.getBitmapData(style.bmpDownStateSource));
+                    downState = new Bitmap(
+                        #if sys
+                        BitmapData.fromFile(style.bmpDownStateSource)
+                        #else
+                        Assets.getBitmapData(style.bmpDownStateSource)
+                        #end
+                        );
                 
                 if (style.bmpHitTestStateSource != null)
-                    hitTestState = new Bitmap(Assets.getBitmapData(style.bmpHitTestStateSource));
+                    hitTestState = new Bitmap(
+                        #if sys
+                        BitmapData.fromFile(style.bmpHitTestStateSource)
+                        #else
+                        Assets.getBitmapData(style.bmpHitTestStateSource)
+                        #end
+                        );
             }
             else if (style.type == "spritesheet")
             {
@@ -259,7 +282,14 @@ class SceneGen
     
     private static function createBitmap(bmp:Dynamic):Bitmap
     {
-        var bitmap = new Bitmap(Assets.getBitmapData(bmp.bitmapSource));
+        var bitmap = new Bitmap(
+            #if sys
+            BitmapData.fromFile(bmp.bitmapSource)
+            #else
+            Assets.getBitmapData(bmp.bitmapSource)
+            #end
+            );
+        
         bitmap.alpha = bmp.alpha != null ? bmp.alpha : 1;
         return bitmap;
     }
@@ -274,17 +304,25 @@ class SceneGen
         {
             fontFile = style.fontFile;
             fontSize = style.fontSize;
-            fontColor = getColorValue(style.fontColor);
+            fontColor = Color.getColorValue(style.fontColor);
         }
         else
         {
             fontFile = text.fontFile == null ? "font/OpenSans-Regular.ttf" : text.fontFile;
             fontSize = text.fontSize == null ? 11 : text.fontSize;
-            fontColor = text.fontColor == null ? 0x000000 : getColorValue(text.fontColor);
+            fontColor = text.fontColor == null ? 0x000000 : Color.getColorValue(text.fontColor);
         }
         
         var txt = new TextField();
-        txt.defaultTextFormat = new TextFormat(Assets.getFont(fontFile).fontName, fontSize, fontColor);
+        
+        txt.defaultTextFormat = new TextFormat(
+            #if sys
+            Font.fromFile(fontFile).fontName,
+            #else
+            Assets.getFont(fontFile).fontName,
+            #end
+            fontSize, fontColor);
+        
         txt.embedFonts = true;
         txt.selectable = text.selectable != null ? text.selectable : false;
         txt.multiline = text.multiline != null ? text.multiline : false;
@@ -324,7 +362,11 @@ class SceneGen
         if (style.type == "spritesheet")
         {
             if (__spritesheet == null)
+                #if sys
+                __spritesheet = BitmapData.fromFile(style.source);
+                #else
                 __spritesheet = Assets.getBitmapData(style.source);
+                #end
             else
                 return;
             
@@ -341,29 +383,6 @@ class SceneGen
             }
             
         }
-    }
-    
-    private static function getColorValue(value:Dynamic):Int
-    {
-        var result:Int = 0;
-        
-        if (Std.is(value, String))
-        {
-            var v:String = value;
-            
-            if (v.indexOf("0x") > -1)
-                result = Color.colorFromHex(v).value;
-            else
-                result = Color.colorByName(v).value;
-        }
-        else if (Reflect.isObject(value))
-        {
-            result = new Color(value.red, value.green, value.blue).value;
-        }
-        else
-            result = value;
-        
-        return result;
     }
     
 }

@@ -107,6 +107,29 @@ class Color
 				return null;
 		}
 	}
+    
+    public static function getColorValue(value:Dynamic):Int
+    {
+        var result:Int = 0;
+        
+        if (Std.is(value, String))
+        {
+            var v:String = value;
+            
+            if (v.indexOf("0x") > -1)
+                result = Color.colorFromHex(v).value;
+            else
+                result = Color.colorByName(v).value;
+        }
+        else if (Reflect.isObject(value))
+        {
+            result = new Color(value.red, value.green, value.blue).value;
+        }
+        else
+            result = value;
+        
+        return result;
+    }
 	
 	//Colors taken from MSDN: https://msdn.microsoft.com/en-us/library/system.drawing.color%28v=vs.110%29.aspx
 	

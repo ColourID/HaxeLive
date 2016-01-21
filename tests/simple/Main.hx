@@ -5,6 +5,8 @@ import openfl.events.Event;
 import openfl.display.Sprite;
 import openfl.Lib;
 import hxlive.DateCompare;
+import haxe.macro.Expr;
+using haxe.macro.Tools;
 
 class Main extends Sprite
 {
@@ -19,7 +21,4 @@ class Main extends Sprite
         
         addChild(live);
 	}
-    
-    
-
 }
