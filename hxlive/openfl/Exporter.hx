@@ -44,6 +44,9 @@ class Exporter
     public static function export(data:Dynamic, target:String)
     {
         Sys.println("0");
+        __imports = [];
+        __styles = new Map<String, Dynamic>();
+        
         generateImports(data.contents);
         
         Sys.println("6");
@@ -51,6 +54,12 @@ class Exporter
         var contents = new Array<Dynamic>();
         var inits = new Array<Dynamic>();
         var locator = new Array<String>();
+        
+        var imports = new Array<Dynamic>();
+        for (i in 0...__imports.length)
+            imports.push( { value: __imports[i] } );
+        
+        Reflect.setField(result, "imports", imports);
         
         Sys.println("7");
         if (data.theme != null)
@@ -137,9 +146,9 @@ class Exporter
             contents.push( { name: item.name, type: item.type } );
         }
         Sys.println("9");
-        result.contents = contents;
+        Reflect.setField(result, "contents", contents);
         
-        result.useResize = options.useResize;
+        Reflect.setField(result, "useResize", options.useResize);
         Sys.println("10");
         if (options.useResize)
         {
