@@ -58,7 +58,7 @@ class Exporter
         var result:Dynamic = { instanceType: data.instanceType };
         var contents = new Array<ContentItem>();
         var inits = new Array<Dynamic>();
-        var locator = new Array<String>();
+        var locator = new Array<Dynamic>();
         
         var imports = new Array<Dynamic>();
         for (i in 0...__imports.length)
@@ -79,6 +79,7 @@ class Exporter
                 if (s.type == "spritesheet")
                 {
                     Reflect.setField(result, "usingSpritesheet", true);
+                    s.setup = Json.stringify(s.setup);
                     Reflect.setField(result, "sheet", s);
                 }
                 
@@ -142,6 +143,20 @@ class Exporter
                     if (item.styleValue[3] != null)
                         Reflect.setField(style, "hitTestState", item.styleValue[3]);
                 }
+                else
+                {
+                    if (item.bmpUpStateSource != null)
+                        Reflect.setField(style, "upState", item.bmpUpStateSource);
+                    
+                    if (item.bmpOverStateSource != null)
+                        Reflect.setField(style, "overState", item.bmpOverStateSource);
+                    
+                    if (item.bmpDownStateSource != null)
+                        Reflect.setField(style, "downState", item.bmpDownStateSource);
+                    
+                    if (item.bmpHitTestStateSource != null)
+                        Reflect.setField(style, "hitTestState", item.bmpHitTestStateSource);
+                }
                 
                 Reflect.setField(item, "style", style);
                 
@@ -152,6 +167,7 @@ class Exporter
         }
         Sys.println("9");
         Reflect.setField(result, "contents", contents);
+        Reflect.setField(result, "inits", inits);
         
         Reflect.setField(result, "useResize", options.useResize);
         Sys.println("10");
@@ -162,7 +178,9 @@ class Exporter
                 Sys.println("11");
                 var item:Dynamic = data.contents[i];
                 
-                var data:Sizer = {};
+                var data:Sizer = { };
+                
+                data.first = (i == 0);
                 
                 if (item.flow != null && item.type == "Sprite")
                 {
@@ -200,7 +218,7 @@ class Exporter
                 data.x = item.x;
                 data.y = item.y;
                 Sys.println("11");
-                locator.push(executeLocator(data));
+                locator.push( { code: executeLocator(data) } );
             }
         }
         Sys.println("11");
@@ -334,6 +352,7 @@ typedef Sizer = {
     @:optional var alignIsObject:Bool;
     @:optional var align:Dynamic;
     @:optional var alignOrFlow:Bool;
+    @:optional var first:Bool;
 }
 
 typedef Alignment = {

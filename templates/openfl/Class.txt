@@ -1,27 +1,23 @@
 package scenes;
 ::foreach imports::
-import ::value::;
-::end::
+import ::value::; ::end::
 import openfl.events.Event;
 
 class ::instanceType:: extends Sprite
 {
     ::if usingSpritesheet::
-    private var _spritemap:SpriteMap;
+    private var _spritemap:SpriteMap;::end::
+    
+    ::foreach contents::private var ::name:: : ::type::;
     ::end::
     
-    ::foreach contents:: private var ::name:: : ::type::;
-    ::end::
-    
-    ::if useResize::
-    private var _inited:Bool;
+    ::if useResize::private var _inited:Bool;
     ::end::
     
     public function new()
     {
         super();
-        ::if usingSpritesheet::
-        _spritemap = new SpriteMap(::sheet.source::, ::sheet.setup::);
+        ::if usingSpritesheet::_spritemap = new SpriteMap("::sheet.source::", ::sheet.setup::);
         ::end::
         
         ::foreach inits::
