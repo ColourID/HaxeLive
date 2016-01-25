@@ -24,7 +24,6 @@ import hxlive.utils.Color;
 import sys.io.File;
 #end
 
-@:allow(Scene)
 class SceneGen
 {
     
