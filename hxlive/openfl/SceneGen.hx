@@ -24,6 +24,7 @@ import hxlive.utils.Color;
 import sys.io.File;
 #end
 
+@:allow(Scene)
 class SceneGen
 {
     
@@ -139,7 +140,7 @@ class SceneGen
                 var padding = 2;
                 if (items[i].padding != null)
                     padding = items[i].padding;
-                    
+                
                 if (items[i].width != null)
                     obj.width = items[i].width;
                 

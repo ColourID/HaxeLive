@@ -1,0 +1,4 @@
+::name:: = new Bitmap(Assets.getBitmapData(::style.bitmapSource::));
+::name::.alpha = ::alpha::;
+
+addChild(::name::);
