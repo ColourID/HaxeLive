@@ -27,6 +27,7 @@ SOFTWARE.
 package hxlive.openfl;
 import haxe.Template;
 import haxe.Json;
+import hxlive.openfl.Exporter.ExportOptions;
 import hxlive.utils.Color;
 
 #if sys
@@ -44,14 +45,18 @@ class Exporter
     public static function export(data:Dynamic, target:String)
     {
         Sys.println("0");
+        
+        if (options == null)
+            options = { useResize: true };
+        
         __imports = [];
         __styles = new Map<String, Dynamic>();
         
         generateImports(data.contents);
         
         Sys.println("6");
-        var result:Dynamic = { };
-        var contents = new Array<Dynamic>();
+        var result:Dynamic = { instanceType: data.instanceType };
+        var contents = new Array<ContentItem>();
         var inits = new Array<Dynamic>();
         var locator = new Array<String>();
         
@@ -73,8 +78,8 @@ class Exporter
                 var s:Dynamic = Reflect.field(theme, styles[i]);
                 if (s.type == "spritesheet")
                 {
-                    result.usingSpritesheet = true;
-                    result.sheet = s;
+                    Reflect.setField(result, "usingSpritesheet", true);
+                    Reflect.setField(result, "sheet", s);
                 }
                 
                 __styles.set(styles[i], s);
@@ -152,27 +157,38 @@ class Exporter
         Sys.println("10");
         if (options.useResize)
         {
-            for (i in 0...contents.length)
+            for (i in 0...data.contents.length)
             {
+                Sys.println("11");
                 var item:Dynamic = data.contents[i];
                 
-                var data:Sizer = null;
+                var data:Sizer = {};
                 
                 if (item.flow != null && item.type == "Sprite")
                 {
                     data.flowing = true;
                     data.flow = item.flow;
+                    data.alignOrFlow = true;
                 }
                 else
                 {
                     if (item.align != null)
                     {
+                        data.alignOrFlow = true;
                         data.alignIsObject = Reflect.isObject(item.align);
+                        if (!data.alignIsObject)
+                        {
+                            if (item.align < 0)
+                                data.align = item.align + 11;
+                            else
+                                data.align = item.align;
+                        }
                     }
+                    else
+                        data.alignOrFlow = false;
                     
-                    data.align = item.align;
                 }
-                
+                Sys.println("11");
                 data.name = item.name;
                 
                 if (item.height != null)
@@ -183,12 +199,12 @@ class Exporter
                 
                 data.x = item.x;
                 data.y = item.y;
-                
+                Sys.println("11");
                 locator.push(executeLocator(data));
             }
         }
         Sys.println("11");
-        result.sizers = locator;
+        Reflect.setField(result, "sizers", locator);
         Sys.println("12");
         var t = new Template(File.getContent("templates/openfl/Class.txt"));
         File.saveContent(target, t.execute(result));
@@ -307,7 +323,7 @@ typedef ExportOptions = {
 }
 
 typedef Sizer = {
-    var name:String;
+    @:optional var name:String;
     @:optional var padding:Int;
     @:optional var width:Int;
     @:optional var height:Int;
@@ -317,10 +333,16 @@ typedef Sizer = {
     @:optional var flowing:Bool;
     @:optional var alignIsObject:Bool;
     @:optional var align:Dynamic;
+    @:optional var alignOrFlow:Bool;
 }
 
 typedef Alignment = {
     var name:String;
     var alignment:Int;
     var padding:Int;
+}
+
+typedef ContentItem = {
+    var name:String;
+    var type:String;
 }
