@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ColourID/HaxeLive.svg?branch=master)](https://travis-ci.org/ColourID/HaxeLive)
+
 # HaxeLive
 HaxeLive is a library that currently supports OpenFL in bringing live preview capabilities.
 
@@ -41,8 +43,15 @@ All of the parsing, scene generation and previewing is done automatically.
 
 Once you have designed an interface you like, you can use the `SceneGen` class, followed by the `generate` function that takes the parsed data from a JSON file.
 
+## Exporting
+You can now export what you see on the screen into usable Haxe source code to use in your projects.
+
+To do this, simply press CTRL+E on any C++ target and a dialog will appear allowing you to select a location you wish to save your Haxe code to. Once you have chosen a location and hit save, the user interface will be exported to Haxe code.
+
+Why Export? Exporting your JSON file into usable Haxe code will make it easier for you to add logic to the scenes you create, instead of using the `SceneGen` class. It also removes the tedious task of setting up all of these objects yourself.
+
 ## Documentation
-Because there is a lot of information regarding this library, please consult the [wiki](https://github.com/tienery/HaxeLive/wiki).
+Because there is a lot of information regarding this library, please consult the [wiki](https://github.com/ColourID/HaxeLive/wiki).
 
 ## Submitting a Pull Request
 You can submit a pull request for one of these reasons:
