@@ -15,4 +15,4 @@ install:
     - haxelib dev hxlive $(pwd)
 
 script:
-    - if [[ $TARGET == 'cpp' ]]; then haxelib run openfl build test/simple/project.xml windows ; fi
+    - if [[ $TARGET == 'cpp' ]]; then haxelib run openfl build tests/simple/project.xml windows ; fi
