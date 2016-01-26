@@ -3,10 +3,9 @@ package;
 import hxlive.Live;
 import openfl.events.Event;
 import openfl.display.Sprite;
+import openfl.display.FPS;
 import openfl.Lib;
 import hxlive.DateCompare;
-import haxe.macro.Expr;
-using haxe.macro.Tools;
 
 class Main extends Sprite
 {

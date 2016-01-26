@@ -6,7 +6,7 @@
 	
 	<window background="#FFFFFF" fps="60" />
 	<window width="800" height="480" unless="mobile" />
-	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
+	<window orientation="landscape" vsync="false" hardware="true" antialiasing="0" if="cpp" />
 	
 	<source path="./" />
 	<haxelib name="openfl" />
