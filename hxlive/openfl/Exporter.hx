@@ -178,47 +178,54 @@ class Exporter
                 Sys.println("11");
                 var item:Dynamic = data.contents[i];
                 
-                var data:Sizer = { };
-                
-                data.first = (i == 0);
+                var data:Sizer = {
+                    name:item.name,
+                    location:alignCenter,
+                    first:(i == 0),
+                    width:item.width,
+                    height:item.height,
+                    x:item.x,
+                    y:item.y
+                };
                 
                 if (item.flow != null && item.type == "Sprite")
                 {
-                    data.flowing = true;
-                    data.flow = item.flow;
-                    data.alignOrFlow = true;
+                    data.location = flow(item.flow == 0);
                 }
                 else
                 {
-                    if (item.align != null)
-                    {
-                        data.alignOrFlow = true;
-                        data.alignIsObject = Reflect.isObject(item.align);
-                        if (!data.alignIsObject)
-                        {
-                            if (item.align < 0)
-                                data.align = item.align + 11;
-                            else
-                                data.align = item.align;
-                        }
+                    switch(item.align) {
+                        case {alignment:align, name:name, padding:padding}:
+                            var edge:Edge = switch(align) {
+                                case 0: Left;
+                                case 1: Top;
+                                case 2: Right;
+                                default: Bottom;
+                            }
+                            data.location = nextTo(name, padding, edge);
+                        case 4:
+                            data.location = alignCenter;
+                        case 5:
+                            data.location = centerVertically;
+                        case 6:
+                            data.location = centerHorizontally;
+                        default:
+                            var edge:Edge = switch(item.align) {
+                                case 0 | -1: Left;
+                                case 1 | -2: Top;
+                                case 2 | -3: Right;
+                                default: Bottom;
+                            }
+                            if(item.align < 0) {
+                                data.location = screenEdge(edge);
+                            } else {
+                                data.location = align(edge);
+                            }
                     }
-                    else
-                        data.alignOrFlow = false;
-                    
                 }
+                
                 Sys.println("11");
-                data.name = item.name;
-                
-                if (item.height != null)
-                    data.height = item.height;
-                
-                if (item.width != null)
-                    data.width = item.width;
-                
-                data.x = item.x;
-                data.y = item.y;
-                Sys.println("11");
-                locator.push( { code: executeLocator(data) } );
+                locator.push( { code: getLocationCode(data) } );
             }
         }
         Sys.println("11");
@@ -229,11 +236,45 @@ class Exporter
         Sys.println("13");
     }
     
-    private static function executeLocator(data:Dynamic):String
-    {
-        var t = new Template(File.getContent("templates/openfl/Sizer.txt"));
-        return t.execute(data);
-    }
+    public static function getLocationCode(data:Sizer):String {
+		var result:String = "";
+		var name:String = data.name;
+		
+		if(data.first) {
+			if(data.padding == null) {
+				data.padding = 2;
+			}
+			result = 'var padding = ${data.padding};\n        ';
+		}
+		
+		if(data.width != null) {
+			result += '$name.width = ${data.width};\n        ';
+		}
+		if(data.height != null) {
+			result += '$name.height = ${data.height};\n        ';
+		}
+		
+		switch(data.location) {
+			case flow(fromTop):
+				var source:String = (fromTop ? "Top" : "Left");
+				result += 'Flow.flowFrom$source($name, padding);\n        ';
+			case nextTo(otherName, padding, edge):
+				result += 'Location.setLocation${edge.getName()}Of($name, getChildByName($otherName), $padding);\n        ';
+			case align(edge):
+				result += 'Alignment.align${edge.getName()}($name, ${data.padding});\n        ';
+			default:
+				result += 'Alignment.${data.location.getName()}($name);\n        ';
+		}
+		
+		if(data.x != null) {
+			result += '$name.x = ${data.x};\n        ';
+		}
+		if(data.y != null) {
+			result += '$name.y = ${data.y};\n        ';
+		}
+		
+		return result;
+	}
     
     private static function initSimpleButton(data:Dynamic):String
     {
@@ -341,24 +382,30 @@ typedef ExportOptions = {
 }
 
 typedef Sizer = {
-    @:optional var name:String;
-    @:optional var padding:Int;
+    var name:String;
+    var location:Location;
     @:optional var width:Int;
     @:optional var height:Int;
     @:optional var x:Int;
     @:optional var y:Int;
-    @:optional var flow:Int;
-    @:optional var flowing:Bool;
-    @:optional var alignIsObject:Bool;
-    @:optional var align:Dynamic;
-    @:optional var alignOrFlow:Bool;
     @:optional var first:Bool;
 }
 
-typedef Alignment = {
-    var name:String;
-    var alignment:Int;
-    var padding:Int;
+enum Location {
+    flow(fromTop:Bool);
+    nextTo(name:String, padding:Int, edge:Edge);
+    screenEdge(edge:Edge);
+    align(edge:Edge);
+    centerVertically;
+    centerHorizontally;
+    alignCenter;
+}
+
+enum Edge {
+    Left;
+    Top;
+    Right;
+    Bottom;
 }
 
 typedef ContentItem = {
