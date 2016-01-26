@@ -92,6 +92,12 @@ class Exporter
         {
             var item:Dynamic = data.contents[i];
             
+            if (item.name == null)
+            {
+                item.name = item.type.charAt(0).toLowerCase()
+                    + item.type.substr(1) + i;
+            }
+            
             var style:Dynamic = { };
             
             if (item.styleName != null)
@@ -185,24 +191,29 @@ class Exporter
                     width:item.width,
                     height:item.height,
                     x:item.x,
-                    y:item.y
+                    y:item.y,
+                    padding:item.padding
                 };
                 
                 if (item.flow != null && item.type == "Sprite")
                 {
                     data.location = flow(item.flow == 0);
                 }
+                else if (Reflect.isObject(item.align))
+                {
+                    var edge:Edge = switch (item.align.alignment)
+                    {
+                        case 0: Left;
+                        case 1: Top;
+                        case 2: Right;
+                        default: Bottom;
+                    }
+                    data.location = nextTo(item.align.name, item.align.padding, edge);
+                }
                 else
                 {
-                    switch(item.align) {
-                        case {alignment:align, name:name, padding:padding}:
-                            var edge:Edge = switch(align) {
-                                case 0: Left;
-                                case 1: Top;
-                                case 2: Right;
-                                default: Bottom;
-                            }
-                            data.location = nextTo(name, padding, edge);
+                    switch (item.align)
+                    {
                         case 4:
                             data.location = alignCenter;
                         case 5:
@@ -216,11 +227,10 @@ class Exporter
                                 case 2 | -3: Right;
                                 default: Bottom;
                             }
-                            if(item.align < 0) {
+                            if (item.align < 0)
                                 data.location = screenEdge(edge);
-                            } else {
+                            else
                                 data.location = align(edge);
-                            }
                     }
                 }
                 
@@ -237,44 +247,49 @@ class Exporter
     }
     
     public static function getLocationCode(data:Sizer):String {
-		var result:String = "";
-		var name:String = data.name;
-		
-		if(data.first) {
-			if(data.padding == null) {
-				data.padding = 2;
-			}
-			result = 'var padding = ${data.padding};\n        ';
-		}
-		
-		if(data.width != null) {
-			result += '$name.width = ${data.width};\n        ';
-		}
-		if(data.height != null) {
-			result += '$name.height = ${data.height};\n        ';
-		}
-		
-		switch(data.location) {
-			case flow(fromTop):
-				var source:String = (fromTop ? "Top" : "Left");
-				result += 'Flow.flowFrom$source($name, padding);\n        ';
-			case nextTo(otherName, padding, edge):
-				result += 'Location.setLocation${edge.getName()}Of($name, getChildByName($otherName), $padding);\n        ';
-			case align(edge):
-				result += 'Alignment.align${edge.getName()}($name, ${data.padding});\n        ';
-			default:
-				result += 'Alignment.${data.location.getName()}($name);\n        ';
-		}
-		
-		if(data.x != null) {
-			result += '$name.x = ${data.x};\n        ';
-		}
-		if(data.y != null) {
-			result += '$name.y = ${data.y};\n        ';
-		}
-		
-		return result;
-	}
+        var result:String = "";
+        var name:String = data.name;
+        
+        if (data.first)
+        {
+            if(data.padding == null)
+                data.padding = 2;
+            result = 'var padding = ${data.padding};\n        ';
+        }
+        
+        if (data.width != null)
+            result += '$name.width = ${data.width};\n        ';
+        if (data.height != null)
+            result += '$name.height = ${data.height};\n        ';
+        
+        if (data.location != null)
+        {
+            trace(data.location);
+            switch (data.location)
+            {
+                case flow(fromTop):
+                    var source:String = (fromTop ? "Top" : "Left");
+                    result += 'Flow.flowFrom$source($name, padding);\n        ';
+                case nextTo(otherName, padding, edge):
+                    result += 'Location.setLocation${edge.getName()}Of($name, getChildByName($otherName), $padding);\n        ';
+                case screenEdge(edge):
+                    result += 'Location.screenFrom${edge.getName()}($name, padding);\n        ';
+                case align(edge):
+                    result += 'Alignment.align${edge.getName()}($name, padding);\n        ';
+                case alignCenter | centerVertically | centerHorizontally:
+                    result += 'Alignment.${data.location.getName()}($name);\n        ';
+            }
+        }
+        else
+        {
+            if(data.x != null)
+                result += '$name.x = ${data.x};\n        ';
+            if(data.y != null)
+                result += '$name.y = ${data.y};\n        ';
+        }
+        
+        return result;
+    }
     
     private static function initSimpleButton(data:Dynamic):String
     {
@@ -383,12 +398,13 @@ typedef ExportOptions = {
 
 typedef Sizer = {
     var name:String;
-    var location:Location;
+    @:optional var location:Location;
     @:optional var width:Int;
     @:optional var height:Int;
     @:optional var x:Int;
     @:optional var y:Int;
     @:optional var first:Bool;
+    @:optional var padding:Int;
 }
 
 enum Location {
