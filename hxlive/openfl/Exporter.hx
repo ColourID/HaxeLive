@@ -64,7 +64,7 @@ class Exporter
         for (i in 0...__imports.length)
             imports.push( { value: __imports[i] } );
         
-        Reflect.setField(result, "imports", imports);
+        result.imports = imports;
         
         Sys.println("7");
         if (data.theme != null)
@@ -78,9 +78,9 @@ class Exporter
                 var s:Dynamic = Reflect.field(theme, styles[i]);
                 if (s.type == "spritesheet")
                 {
-                    Reflect.setField(result, "usingSpritesheet", true);
+                    result.usingSpritesheet = true;
                     s.setup = Json.stringify(s.setup);
-                    Reflect.setField(result, "sheet", s);
+                    result.sheet = s;
                 }
                 
                 __styles.set(styles[i], s);
@@ -108,7 +108,7 @@ class Exporter
                     style.fontColor = Color.getColorValue(item.fontColor);
                 }
                 
-                Reflect.setField(item, "style", style);
+                item.style = style;
                 
                 item.type = "TextField";
                 inits.push( { code: initTextField(item) } );
@@ -120,7 +120,7 @@ class Exporter
                     style.bitmapSource = item.bitmapSource;
                 }
                 
-                Reflect.setField(item, "style", style);
+                item.style = style;
                 
                 inits.push( { code: initBitmap(item) } );
             }
@@ -129,36 +129,36 @@ class Exporter
                 var usingSpritesheet = (style.type == "spritesheet");
                 if (usingSpritesheet)
                 {
-                    Reflect.setField(item, "usingSpritesheet", usingSpritesheet);
+                    item.usingSpritesheet = usingSpritesheet;
                     
                     if (item.styleValue[0] != null)
-                        Reflect.setField(style, "upState", item.styleValue[0]);
+                        style.upState = item.styleValue[0];
                     
                     if (item.styleValue[1] != null)
-                        Reflect.setField(style, "overState", item.styleValue[1]);
+                        style.overState = item.styleValue[1];
                     
                     if (item.styleValue[2] != null)
-                        Reflect.setField(style, "downState", item.styleValue[2]);
+                        style.downState = item.styleValue[2];
                     
                     if (item.styleValue[3] != null)
-                        Reflect.setField(style, "hitTestState", item.styleValue[3]);
+                        style.hitTestState = item.styleValue[3];
                 }
                 else
                 {
                     if (item.bmpUpStateSource != null)
-                        Reflect.setField(style, "upState", item.bmpUpStateSource);
+                        style.upState = item.bmpUpStateSource;
                     
                     if (item.bmpOverStateSource != null)
-                        Reflect.setField(style, "overState", item.bmpOverStateSource);
+                        style.overState = item.bmpOverStateSource;
                     
                     if (item.bmpDownStateSource != null)
-                        Reflect.setField(style, "downState", item.bmpDownStateSource);
+                        style.downState = item.bmpDownStateSource;
                     
                     if (item.bmpHitTestStateSource != null)
-                        Reflect.setField(style, "hitTestState", item.bmpHitTestStateSource);
+                        style.hitTestState = item.bmpHitTestStateSource;
                 }
                 
-                Reflect.setField(item, "style", style);
+                item.style = style;
                 
                 inits.push( { code: initSimpleButton(item) } );
             }
@@ -166,10 +166,10 @@ class Exporter
             contents.push( { name: item.name, type: item.type } );
         }
         Sys.println("9");
-        Reflect.setField(result, "contents", contents);
-        Reflect.setField(result, "inits", inits);
+        result.contents = contents;
+        result.inits = inits;
         
-        Reflect.setField(result, "useResize", options.useResize);
+        result.useResize = options.useResize;
         Sys.println("10");
         if (options.useResize)
         {
@@ -222,7 +222,7 @@ class Exporter
             }
         }
         Sys.println("11");
-        Reflect.setField(result, "sizers", locator);
+        result.sizers = locator;
         Sys.println("12");
         var t = new Template(File.getContent("templates/openfl/Class.txt"));
         File.saveContent(target, t.execute(result));
