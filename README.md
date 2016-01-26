@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ColourID/HaxeLive.svg?branch=master)](https://travis-ci.org/ColourID/HaxeLive)
+[![Build Status](https://travis-ci.org/ColourID/HaxeLive.svg?branch=master)](https://travis-ci.org/ColourID/HaxeLive) [![ZenHub] (https://raw.githubusercontent.com/ZenHubIO/support/master/zenhub-badge.png)] (https://zenhub.io)
 
 # HaxeLive
 HaxeLive is a library that currently supports OpenFL in bringing live preview capabilities.
