@@ -44,8 +44,6 @@ class Exporter
     
     public static function export(data:Dynamic, target:String)
     {
-        Sys.println("0");
-        
         if (options == null)
             options = { useResize: true };
         
@@ -54,7 +52,6 @@ class Exporter
         
         generateImports(data.contents);
         
-        Sys.println("6");
         var result:Dynamic = { instanceType: data.instanceType };
         var contents = new Array<ContentItem>();
         var inits = new Array<Dynamic>();
@@ -66,7 +63,6 @@ class Exporter
         
         result.imports = imports;
         
-        Sys.println("7");
         if (data.theme != null)
         {
             var theme:Dynamic = Json.parse(File.getContent(data.theme));
@@ -78,16 +74,13 @@ class Exporter
                 var s:Dynamic = Reflect.field(theme, styles[i]);
                 if (s.type == "spritesheet")
                 {
-                    result.usingSpritesheet = true;
-                    s.setup = Json.stringify(s.setup);
-                    result.sheet = s;
+                    result.theme = data.theme;
                 }
                 
                 __styles.set(styles[i], s);
             }
         }
         
-        Sys.println("8");
         for (i in 0...data.contents.length)
         {
             var item:Dynamic = data.contents[i];
@@ -171,12 +164,10 @@ class Exporter
             
             contents.push( { name: item.name, type: item.type } );
         }
-        Sys.println("9");
         result.contents = contents;
         result.inits = inits;
         
         result.useResize = options.useResize;
-        Sys.println("10");
         if (options.useResize)
         {
             for (i in 0...data.contents.length)
@@ -234,16 +225,13 @@ class Exporter
                     }
                 }
                 
-                Sys.println("11");
                 locator.push( { code: getLocationCode(data) } );
             }
         }
-        Sys.println("11");
         result.sizers = locator;
-        Sys.println("12");
+
         var t = new Template(File.getContent("templates/openfl/Class.txt"));
         File.saveContent(target, t.execute(result));
-        Sys.println("13");
     }
     
     public static function getLocationCode(data:Sizer):String {
@@ -254,13 +242,13 @@ class Exporter
         {
             if(data.padding == null)
                 data.padding = 2;
-            result = 'var padding = ${data.padding};\n        ';
+            result = 'var padding = ${data.padding};\n';
         }
         
         if (data.width != null)
-            result += '$name.width = ${data.width};\n        ';
+            result += '$name.width = ${data.width};\n';
         if (data.height != null)
-            result += '$name.height = ${data.height};\n        ';
+            result += '$name.height = ${data.height};\n';
         
         if (data.location != null)
         {
@@ -269,23 +257,23 @@ class Exporter
             {
                 case flow(fromTop):
                     var source:String = (fromTop ? "Top" : "Left");
-                    result += 'Flow.flowFrom$source($name, padding);\n        ';
+                    result += 'Flow.flowFrom$source($name, padding);\n';
                 case nextTo(otherName, padding, edge):
-                    result += 'Location.setLocation${edge.getName()}Of($name, getChildByName($otherName), $padding);\n        ';
+                    result += 'Location.setLocation${edge.getName()}Of($name, $otherName, $padding);\n';
                 case screenEdge(edge):
-                    result += 'Location.screenFrom${edge.getName()}($name, padding);\n        ';
+                    result += 'Location.screenFrom${edge.getName()}($name, padding);\n';
                 case align(edge):
-                    result += 'Alignment.align${edge.getName()}($name, padding);\n        ';
+                    result += 'Alignment.align${edge.getName()}($name, padding);\n';
                 case alignCenter | centerVertically | centerHorizontally:
-                    result += 'Alignment.${data.location.getName()}($name);\n        ';
+                    result += 'Alignment.${data.location.getName()}($name);\n';
             }
         }
         else
         {
             if(data.x != null)
-                result += '$name.x = ${data.x};\n        ';
+                result += '$name.x = ${data.x};\n';
             if(data.y != null)
-                result += '$name.y = ${data.y};\n        ';
+                result += '$name.y = ${data.y};\n';
         }
         
         return result;
@@ -345,12 +333,10 @@ class Exporter
     {
         if (content != null)
         {
-            Sys.println("1");
             for (i in 0...content.length)
             {
                 var item:Dynamic = content[i];
                 
-                Sys.println("2");
                 if (item.type == "Text")
                 {
                     addArrayItem("openfl.text.TextField");
@@ -370,15 +356,13 @@ class Exporter
                     addArrayItem("openfl.display.Bitmap");
                     addArrayItem("openfl.Assets");
                 }
-                Sys.println("3");
             }
         }
-        Sys.println("4");
+
         addArrayItem("hxlive.utils.openfl.Alignment");
         addArrayItem("hxlive.utils.openfl.Flow");
         addArrayItem("hxlive.utils.openfl.Location");
         addArrayItem("hxlive.utils.openfl.SpriteMap");
-        Sys.println("5");
     }
     
     private static function addArrayItem(value:String)

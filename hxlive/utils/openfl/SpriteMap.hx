@@ -1,6 +1,7 @@
 package hxlive.utils.openfl;
 import openfl.display.BitmapData;
 import openfl.Assets;
+import haxe.Json;
 
 class SpriteMap
 {
@@ -8,11 +9,27 @@ class SpriteMap
     private var _spritesheet:BitmapData;
     private var _map:Map<String, BitmapData>;
     
-    public function new(source:String, map:Dynamic) 
+    public function new(theme:String) 
     {
+        var themeData:Dynamic = Json.parse(Assets.getFont(theme));
+        
+        var fields = Reflect.fields(themeData);
+        var source = "";
+        var setup:Dynamic = null;
+        
+        for (field in fields)
+        {
+            var style:Dynamic = Reflect.field(themeData, field);
+            if (style.type == "spritesheet")
+            {
+                setup = style.setup;
+                source = style.source;
+            }
+        }
+        
         _spritesheet = Assets.getBitmapData(source);
         
-        setMap(map);
+        setMap(setup);
     }
     
     public function setMap(map:Dynamic)

@@ -1,0 +1,18 @@
+language: haxe
+
+haxe:
+    - "3.2.1"
+
+env:
+    - TARGET:cpp
+
+install:
+    - mkdir -p ~/haxelib
+    - haxelib setup ~/haxelib
+    - haxelib install openfl 3.4.0
+    - haxelib install lime 2.7.0
+    - haxelib git linc_dialogs https://github.com/snowkit/linc_dialogs.git
+    - haxelib dev hxlive $(pwd)
+
+script:
+    - if [[ $TARGET == 'cpp' ]]; then haxelib run openfl build test/simple/project.xml windows ; fi

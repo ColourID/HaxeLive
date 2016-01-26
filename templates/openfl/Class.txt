@@ -17,7 +17,7 @@ class ::instanceType:: extends Sprite
     public function new()
     {
         super();
-        ::if usingSpritesheet::_spritemap = new SpriteMap("::sheet.source::", ::sheet.setup::);
+        ::if usingSpritesheet::_spritemap = new SpriteMap("::theme::");
         ::end::
         
         ::foreach inits::
