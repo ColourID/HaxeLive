@@ -1,9 +1,9 @@
 ::if usingSpritesheet::
-::name:: = new SimpleButton(new Bitmap(_spritemap.get("::style.upState::")), ::if style.overState::new Bitmap(_spritemap.get("::style.overState::"))::else::null::end::, ::if style.downState::new Bitmap(_spritemap.get("::style.downState::"))::else::null::end::, ::if style.hitTestState::new Bitmap(_spritemap.get("::style.hitTestState::"))::else::null::end::);
-::else::
-::name:: = new SimpleButton(new Bitmap(Assets.getBitmapData("::style.upState::")), ::if style.overState::new Bitmap(Assets.getBitmapData("::style.overState::"))::else::null::end::, ::if style.downState::new Bitmap(Assets.getBitmapData("::style.downState::"))::else::null::end::, ::if style.hitTestState::new Bitmap(Assets.getBitmapData("::style.hitTestState::"))::else::null::end::);
-::end::
+        ::name:: = new SimpleButton(new Bitmap(_spritemap.get("::style.upState::")), ::if style.overState::new Bitmap(_spritemap.get("::style.overState::"))::else::null::end::, ::if style.downState::new Bitmap(_spritemap.get("::style.downState::"))::else::null::end::, ::if style.hitTestState::new Bitmap(_spritemap.get("::style.hitTestState::"))::else::null::end::);
+        ::else::
+        ::name:: = new SimpleButton(new Bitmap(Assets.getBitmapData("::style.upState::")), ::if style.overState::new Bitmap(Assets.getBitmapData("::style.overState::"))::else::null::end::, ::if style.downState::new Bitmap(Assets.getBitmapData("::style.downState::"))::else::null::end::, ::if style.hitTestState::new Bitmap(Assets.getBitmapData("::style.hitTestState::"))::else::null::end::);
+        ::end::
 
-::name::.alpha = ::alpha::;
+        ::name::.alpha = ::alpha::;
 
-addChild(::name::);
+        addChild(::name::);

@@ -172,12 +172,11 @@ class Exporter
         {
             for (i in 0...data.contents.length)
             {
-                Sys.println("11");
                 var item:Dynamic = data.contents[i];
                 
                 var data:Sizer = {
                     name:item.name,
-                    location:alignCenter,
+                    location:null,
                     first:(i == 0),
                     width:item.width,
                     height:item.height,
@@ -190,46 +189,56 @@ class Exporter
                 {
                     data.location = flow(item.flow == 0);
                 }
-                else if (Reflect.isObject(item.align))
+                else if (item.align != null)
                 {
-                    var edge:Edge = switch (item.align.alignment)
+                    if (Reflect.isObject(item.align))
                     {
-                        case 0: Left;
-                        case 1: Top;
-                        case 2: Right;
-                        default: Bottom;
+                        var edge:Edge = switch (item.align.alignment)
+                        {
+                            case 0: Left;
+                            case 1: Top;
+                            case 2: Right;
+                            default: Bottom;
+                        }
+                        data.location = nextTo(item.align.name, item.align.padding, edge);
                     }
-                    data.location = nextTo(item.align.name, item.align.padding, edge);
+                    else
+                    {
+                        switch (item.align)
+                        {
+                            case 4:
+                                data.location = alignCenter;
+                            case 5:
+                                data.location = centerVertically;
+                            case 6:
+                                data.location = centerHorizontally;
+                            default:
+                                var edge:Edge = switch(item.align) {
+                                    case 0 | -1: Left;
+                                    case 1 | -2: Top;
+                                    case 2 | -3: Right;
+                                    default: Bottom;
+                                }
+                                if (item.align < 0)
+                                    data.location = screenEdge(edge);
+                                else
+                                    data.location = align(edge);
+                        }
+                    }
                 }
                 else
                 {
-                    switch (item.align)
-                    {
-                        case 4:
-                            data.location = alignCenter;
-                        case 5:
-                            data.location = centerVertically;
-                        case 6:
-                            data.location = centerHorizontally;
-                        default:
-                            var edge:Edge = switch(item.align) {
-                                case 0 | -1: Left;
-                                case 1 | -2: Top;
-                                case 2 | -3: Right;
-                                default: Bottom;
-                            }
-                            if (item.align < 0)
-                                data.location = screenEdge(edge);
-                            else
-                                data.location = align(edge);
-                    }
+                    if (data.x == null)
+                        data.x = 0;
+                    if (data.y == null)
+                        data.y = 0;
                 }
                 
                 locator.push( { code: getLocationCode(data) } );
             }
         }
         result.sizers = locator;
-
+        
         var t = new Template(File.getContent("templates/openfl/Class.txt"));
         File.saveContent(target, t.execute(result));
     }
@@ -237,43 +246,57 @@ class Exporter
     public static function getLocationCode(data:Sizer):String {
         var result:String = "";
         var name:String = data.name;
+        var spaces:String = "";
         
         if (data.first)
         {
             if(data.padding == null)
                 data.padding = 2;
             result = 'var padding = ${data.padding};\n';
+            spaces = "        ";
         }
         
         if (data.width != null)
-            result += '$name.width = ${data.width};\n';
+        {
+            result += '$spaces$name.width = ${data.width};\n';
+            spaces = "        ";
+        }
         if (data.height != null)
-            result += '$name.height = ${data.height};\n';
+        {
+            result += '$spaces$name.height = ${data.height};\n';
+            spaces = "        ";
+        }
         
         if (data.location != null)
         {
-            trace(data.location);
             switch (data.location)
             {
                 case flow(fromTop):
                     var source:String = (fromTop ? "Top" : "Left");
-                    result += 'Flow.flowFrom$source($name, padding);\n';
+                    result += '$spaces Flow.flowFrom$source($name, padding);\n';
                 case nextTo(otherName, padding, edge):
-                    result += 'Location.setLocation${edge.getName()}Of($name, $otherName, $padding);\n';
+                    result += '$spaces Location.setLocation${edge.getName()}Of($name, $otherName, $padding);\n';
                 case screenEdge(edge):
-                    result += 'Location.screenFrom${edge.getName()}($name, padding);\n';
+                    result += '$spaces Location.screenFrom${edge.getName()}($name, padding);\n';
                 case align(edge):
-                    result += 'Alignment.align${edge.getName()}($name, padding);\n';
+                    result += '$spaces Alignment.align${edge.getName()}($name, padding);\n';
                 case alignCenter | centerVertically | centerHorizontally:
-                    result += 'Alignment.${data.location.getName()}($name);\n';
+                    result += '$spaces Alignment.${data.location.getName()}($name);\n';
             }
+            spaces = "        ";
         }
         else
         {
-            if(data.x != null)
-                result += '$name.x = ${data.x};\n';
-            if(data.y != null)
-                result += '$name.y = ${data.y};\n';
+            if (data.x != null)
+            {
+                result += '$spaces$name.x = ${data.x};\n';
+                spaces = "        ";
+            }
+            if (data.y != null)
+            {
+                result += '$spaces$name.y = ${data.y};\n';
+                spaces = "        ";
+            }
         }
         
         return result;

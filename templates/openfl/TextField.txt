@@ -1,12 +1,12 @@
 ::name:: = new TextField();
-::name::.defaultTextFormat = new TextFormat(Assets.getFont("::style.fontFile::").fontName, ::style.fontSize::, ::style.fontColor::);
-::name::.selectable = ::selectable::;
-::name::.multiline = ::multiline::;
-::name::.embedFonts = true;
-::name::.wordWrap = ::wordWrap::;
-::name::.alpha = ::alpha::;
-::name::.text = "::text::";
-::name::.type = ::fieldType::;
-::name::.autoSize = ::autoSize::;
+        ::name::.defaultTextFormat = new TextFormat(Assets.getFont("::style.fontFile::").fontName, ::style.fontSize::, ::style.fontColor::);
+        ::name::.selectable = ::selectable::;
+        ::name::.multiline = ::multiline::;
+        ::name::.embedFonts = true;
+        ::name::.wordWrap = ::wordWrap::;
+        ::name::.alpha = ::alpha::;
+        ::name::.text = "::text::";
+        ::name::.type = ::fieldType::;
+        ::name::.autoSize = ::autoSize::;
 
-addChild(::name::);
+        addChild(::name::);

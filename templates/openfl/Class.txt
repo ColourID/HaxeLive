@@ -6,31 +6,22 @@ import openfl.events.Event;
 class ::instanceType:: extends Sprite
 {
     ::if usingSpritesheet::
-    private var _spritemap:SpriteMap;::end::
-    
+    private var _spritemap:SpriteMap; ::end::
     ::foreach contents::private var ::name:: : ::type::;
     ::end::
-    
     ::if useResize::private var _inited:Bool;
     ::end::
-    
     public function new()
     {
         super();
-        ::if usingSpritesheet::_spritemap = new SpriteMap("::theme::");
-        ::end::
-        
+        ::if usingSpritesheet::_spritemap = new SpriteMap("::theme::"); ::end::
         ::foreach inits::
         ::code::
         ::end::
-        
         ::if useResize::
-        addEventListener(Event.RESIZE, onResize); 
-        ::end::
-        
+        addEventListener(Event.RESIZE, onResize); ::end::
         resize();
     }
-    
     ::if useResize::
     private function onResize(e:Event)
     {
@@ -40,9 +31,7 @@ class ::instanceType:: extends Sprite
         {
             resize();
         }
-    }
-    ::end::
-    
+    } ::end::
     private function resize()
     {
         ::foreach sizers::
