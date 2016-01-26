@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": ["utility"],
 	"description": "Provides live previewing and scene generation for many targets and frameworks.",
-	"version": "1.1.4",
-	"releasenote": "Optimised live previewing, fixes to button parsing and more.",
+	"version": "1.2.0",
+	"releasenote": "Implemented Exporter.",
 	"contributors": ["tienery"]
 }
