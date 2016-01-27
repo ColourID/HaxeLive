@@ -1,0 +1,1 @@
+sudo haxelib run openfl build ../tests/simple/project.xml mac

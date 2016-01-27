@@ -1,0 +1,1 @@
+haxelib run openfl build ../tests/simple/project.xml windows

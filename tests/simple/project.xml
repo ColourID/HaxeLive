@@ -2,7 +2,7 @@
 <project>
 	<meta title="HaxeLive" package="HaxeLive" version="1.0.0" company="tienery" />
 	
-	<app main="Main" file="HaxeLive" path="bin" />
+	<app main="Main" file="HaxeLive" path="../../bin" />
 	
 	<window background="#FFFFFF" fps="60" />
 	<window width="800" height="480" unless="mobile" />

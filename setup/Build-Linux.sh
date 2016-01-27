@@ -1,0 +1,1 @@
+sudo haxelib run openfl build ../test/simple/project.xml linux
