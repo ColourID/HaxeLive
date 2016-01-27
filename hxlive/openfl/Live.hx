@@ -39,6 +39,7 @@ import haxe.Json;
 import haxe.CallStack;
 
 import haxe.FileSystemExtender;
+import hxlive.utils.Color;
 
 #if telemetry
 import openfl.profiler.Telemetry;
@@ -59,6 +60,7 @@ class Live extends Sprite
     private var _file:String;
     private var _configFile:String;
     private var _activeFiles:Array<FileTimeInfo>;
+    private var _notified:Bool;
     private var data:Dynamic;
     
 	public function new(config:String)
@@ -76,7 +78,26 @@ class Live extends Sprite
         Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, stage_onKeyUp);
     }
     
-    private function stage_onKeyUp(e:KeyboardEvent):Void 
+    private function activateNotify():Void 
+    {   
+        var notify = new Notification("to Export", "CTRL+E");
+        hxlive.utils.Location.screenFromLeft(notify, -200);
+        notify.y = 2;
+        
+        addChild(notify);
+        notify.display(2000, { x: 2, y: 2 } );
+    }
+    
+    private function displayMessage(message:String, backColor:Color)
+    {
+        var notify = new Notification(message, "", 2, backColor);
+        hxlive.utils.Location.screenFromBottom(notify, 200);
+        
+        addChild(notify);
+        notify.display(5000, { x: notify.x, y: notify.y - 230 } );
+    }
+    
+    private function stage_onKeyUp(e:KeyboardEvent):Void
     {
         if (e.keyCode == Keyboard.E && e.ctrlKey)
         {
@@ -87,16 +108,19 @@ class Live extends Sprite
                 var dir = FileSystemExtender.getRootDir(result);
                 if (dir != "" && FileSystem.exists(dir))
                 {
-                    Exporter.export(data, result);
+                    var msg = Exporter.export(data, result);
+                    switch (msg)
+                    {
+                        case "SUCCESS":
+                            displayMessage("Export successful.", Color.green());
+                        default:
+                            displayMessage(msg, Color.red());
+                    }
                 }
                 else
                 {
                     var message = 'The path to the directory: "$dir" does not exist.';
-                    #if windows
-                    Dialogs.message(message, 'Error');
-                    #else
-                    Sys.println(message);
-                    #end
+                    displayMessage(message, Color.red());
                 }
                 
             }
@@ -159,6 +183,12 @@ class Live extends Sprite
                 var content = SceneGen.generate(data);
                 removeChildren();
                 addChild(content);
+                
+                if (!_notified)
+                {
+                    _notified = true;
+                    activateNotify();
+                }
                 
                 requireChange = false;
             }

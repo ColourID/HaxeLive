@@ -42,205 +42,216 @@ class Exporter
     
     public static var options:ExportOptions;
     
-    public static function export(data:Dynamic, target:String)
+    public static function export(data:Dynamic, target:String):String
     {
-        if (options == null)
-            options = { useResize: true };
+        var successful:String = "ERROR";
         
-        __imports = [];
-        __styles = new Map<String, Dynamic>();
-        
-        generateImports(data.contents);
-        
-        var result:Dynamic = { instanceType: data.instanceType };
-        var contents = new Array<ContentItem>();
-        var inits = new Array<Dynamic>();
-        var locator = new Array<Dynamic>();
-        
-        var imports = new Array<Dynamic>();
-        for (i in 0...__imports.length)
-            imports.push( { value: __imports[i] } );
-        
-        result.imports = imports;
-        
-        if (data.theme != null)
+        try
         {
-            var theme:Dynamic = Json.parse(File.getContent(data.theme));
+            if (options == null)
+                options = { useResize: true };
             
-            var styles = Reflect.fields(theme);
+            __imports = [];
+            __styles = new Map<String, Dynamic>();
             
-            for (i in 0...styles.length)
+            generateImports(data.contents);
+            
+            var result:Dynamic = { instanceType: data.instanceType };
+            var contents = new Array<ContentItem>();
+            var inits = new Array<Dynamic>();
+            var locator = new Array<Dynamic>();
+            
+            var imports = new Array<Dynamic>();
+            for (i in 0...__imports.length)
+                imports.push( { value: __imports[i] } );
+            
+            result.imports = imports;
+            
+            if (data.theme != null)
             {
-                var s:Dynamic = Reflect.field(theme, styles[i]);
-                if (s.type == "spritesheet")
+                var theme:Dynamic = Json.parse(File.getContent(data.theme));
+                
+                var styles = Reflect.fields(theme);
+                
+                for (i in 0...styles.length)
                 {
-                    result.theme = data.theme;
+                    var s:Dynamic = Reflect.field(theme, styles[i]);
+                    if (s.type == "spritesheet")
+                    {
+                        result.theme = data.theme;
+                    }
+                    
+                    __styles.set(styles[i], s);
                 }
-                
-                __styles.set(styles[i], s);
-            }
-        }
-        
-        for (i in 0...data.contents.length)
-        {
-            var item:Dynamic = data.contents[i];
-            
-            if (item.name == null)
-            {
-                item.name = item.type.charAt(0).toLowerCase()
-                    + item.type.substr(1) + i;
             }
             
-            var style:Dynamic = { };
-            
-            if (item.styleName != null)
-            {
-                style = __styles.get(item.styleName);
-            }
-            
-            if (item.type == "Text")
-            {
-                if (Reflect.fields(style).length == 0)
-                {
-                    style.fontFile = item.fontFile;
-                    style.fontSize = item.fontSize;
-                    style.fontColor = Color.getColorValue(item.fontColor);
-                }
-                
-                item.style = style;
-                
-                item.type = "TextField";
-                inits.push( { code: initTextField(item) } );
-            }
-            else if (item.type == "Bitmap")
-            {
-                if (Reflect.fields(style).length == 0)
-                {
-                    style.bitmapSource = item.bitmapSource;
-                }
-                
-                item.style = style;
-                
-                inits.push( { code: initBitmap(item) } );
-            }
-            else if (item.type == "SimpleButton")
-            {
-                var usingSpritesheet = (style.type == "spritesheet");
-                if (usingSpritesheet)
-                {
-                    item.usingSpritesheet = usingSpritesheet;
-                    
-                    if (item.styleValue[0] != null)
-                        style.upState = item.styleValue[0];
-                    
-                    if (item.styleValue[1] != null)
-                        style.overState = item.styleValue[1];
-                    
-                    if (item.styleValue[2] != null)
-                        style.downState = item.styleValue[2];
-                    
-                    if (item.styleValue[3] != null)
-                        style.hitTestState = item.styleValue[3];
-                }
-                else
-                {
-                    if (item.bmpUpStateSource != null)
-                        style.upState = item.bmpUpStateSource;
-                    
-                    if (item.bmpOverStateSource != null)
-                        style.overState = item.bmpOverStateSource;
-                    
-                    if (item.bmpDownStateSource != null)
-                        style.downState = item.bmpDownStateSource;
-                    
-                    if (item.bmpHitTestStateSource != null)
-                        style.hitTestState = item.bmpHitTestStateSource;
-                }
-                
-                item.style = style;
-                
-                inits.push( { code: initSimpleButton(item) } );
-            }
-            
-            contents.push( { name: item.name, type: item.type } );
-        }
-        result.contents = contents;
-        result.inits = inits;
-        
-        result.useResize = options.useResize;
-        if (options.useResize)
-        {
             for (i in 0...data.contents.length)
             {
                 var item:Dynamic = data.contents[i];
                 
-                var data:Sizer = {
-                    name:item.name,
-                    location:null,
-                    first:(i == 0),
-                    width:item.width,
-                    height:item.height,
-                    x:item.x,
-                    y:item.y,
-                    padding:item.padding
-                };
-                
-                if (item.flow != null && item.type == "Sprite")
+                if (item.name == null)
                 {
-                    data.location = flow(item.flow == 0);
+                    item.name = item.type.charAt(0).toLowerCase()
+                        + item.type.substr(1) + i;
                 }
-                else if (item.align != null)
+                
+                var style:Dynamic = { };
+                
+                if (item.styleName != null)
                 {
-                    if (Reflect.isObject(item.align))
+                    style = __styles.get(item.styleName);
+                }
+                
+                if (item.type == "Text")
+                {
+                    if (Reflect.fields(style).length == 0)
                     {
-                        var edge:Edge = switch (item.align.alignment)
-                        {
-                            case 0: Left;
-                            case 1: Top;
-                            case 2: Right;
-                            default: Bottom;
-                        }
-                        data.location = nextTo(item.align.name, item.align.padding, edge);
+                        style.fontFile = item.fontFile;
+                        style.fontSize = item.fontSize;
+                        style.fontColor = Color.getColorValue(item.fontColor);
+                    }
+                    
+                    item.style = style;
+                    
+                    item.type = "TextField";
+                    inits.push( { code: initTextField(item) } );
+                }
+                else if (item.type == "Bitmap")
+                {
+                    if (Reflect.fields(style).length == 0)
+                    {
+                        style.bitmapSource = item.bitmapSource;
+                    }
+                    
+                    item.style = style;
+                    
+                    inits.push( { code: initBitmap(item) } );
+                }
+                else if (item.type == "SimpleButton")
+                {
+                    var usingSpritesheet = (style.type == "spritesheet");
+                    if (usingSpritesheet)
+                    {
+                        item.usingSpritesheet = usingSpritesheet;
+                        
+                        if (item.styleValue[0] != null)
+                            style.upState = item.styleValue[0];
+                        
+                        if (item.styleValue[1] != null)
+                            style.overState = item.styleValue[1];
+                        
+                        if (item.styleValue[2] != null)
+                            style.downState = item.styleValue[2];
+                        
+                        if (item.styleValue[3] != null)
+                            style.hitTestState = item.styleValue[3];
                     }
                     else
                     {
-                        switch (item.align)
-                        {
-                            case 4:
-                                data.location = alignCenter;
-                            case 5:
-                                data.location = centerVertically;
-                            case 6:
-                                data.location = centerHorizontally;
-                            default:
-                                var edge:Edge = switch(item.align) {
-                                    case 0 | -1: Left;
-                                    case 1 | -2: Top;
-                                    case 2 | -3: Right;
-                                    default: Bottom;
-                                }
-                                if (item.align < 0)
-                                    data.location = screenEdge(edge);
-                                else
-                                    data.location = align(edge);
-                        }
+                        if (item.bmpUpStateSource != null)
+                            style.upState = item.bmpUpStateSource;
+                        
+                        if (item.bmpOverStateSource != null)
+                            style.overState = item.bmpOverStateSource;
+                        
+                        if (item.bmpDownStateSource != null)
+                            style.downState = item.bmpDownStateSource;
+                        
+                        if (item.bmpHitTestStateSource != null)
+                            style.hitTestState = item.bmpHitTestStateSource;
                     }
-                }
-                else
-                {
-                    if (data.x == null)
-                        data.x = 0;
-                    if (data.y == null)
-                        data.y = 0;
+                    
+                    item.style = style;
+                    
+                    inits.push( { code: initSimpleButton(item) } );
                 }
                 
-                locator.push( { code: getLocationCode(data) } );
+                contents.push( { name: item.name, type: item.type } );
             }
+            result.contents = contents;
+            result.inits = inits;
+            
+            result.useResize = options.useResize;
+            if (options.useResize)
+            {
+                for (i in 0...data.contents.length)
+                {
+                    var item:Dynamic = data.contents[i];
+                    
+                    var data:Sizer = {
+                        name:item.name,
+                        location:null,
+                        first:(i == 0),
+                        width:item.width,
+                        height:item.height,
+                        x:item.x,
+                        y:item.y,
+                        padding:item.padding
+                    };
+                    
+                    if (item.flow != null && item.type == "Sprite")
+                    {
+                        data.location = flow(item.flow == 0);
+                    }
+                    else if (item.align != null)
+                    {
+                        if (Reflect.isObject(item.align))
+                        {
+                            var edge:Edge = switch (item.align.alignment)
+                            {
+                                case 0: Left;
+                                case 1: Top;
+                                case 2: Right;
+                                default: Bottom;
+                            }
+                            data.location = nextTo(item.align.name, item.align.padding, edge);
+                        }
+                        else
+                        {
+                            switch (item.align)
+                            {
+                                case 4:
+                                    data.location = alignCenter;
+                                case 5:
+                                    data.location = centerVertically;
+                                case 6:
+                                    data.location = centerHorizontally;
+                                default:
+                                    var edge:Edge = switch(item.align) {
+                                        case 0 | -1: Left;
+                                        case 1 | -2: Top;
+                                        case 2 | -3: Right;
+                                        default: Bottom;
+                                    }
+                                    if (item.align < 0)
+                                        data.location = screenEdge(edge);
+                                    else
+                                        data.location = align(edge);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (data.x == null)
+                            data.x = 0;
+                        if (data.y == null)
+                            data.y = 0;
+                    }
+                    
+                    locator.push( { code: getLocationCode(data) } );
+                }
+            }
+            result.sizers = locator;
+            
+            var t = new Template(File.getContent("templates/openfl/Class.txt"));
+            File.saveContent(target, t.execute(result));
         }
-        result.sizers = locator;
+        catch (msg:String)
+        {
+            return successful += msg;
+        }
         
-        var t = new Template(File.getContent("templates/openfl/Class.txt"));
-        File.saveContent(target, t.execute(result));
+        return successful = "SUCCESS";
     }
     
     public static function getLocationCode(data:Sizer):String {
@@ -405,7 +416,7 @@ typedef ExportOptions = {
 
 typedef Sizer = {
     var name:String;
-    @:optional var location:Location;
+    @:optional var location:Position;
     @:optional var width:Int;
     @:optional var height:Int;
     @:optional var x:Int;
@@ -414,7 +425,7 @@ typedef Sizer = {
     @:optional var padding:Int;
 }
 
-enum Location {
+enum Position {
     flow(fromTop:Bool);
     nextTo(name:String, padding:Int, edge:Edge);
     screenEdge(edge:Edge);
