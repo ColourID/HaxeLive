@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": ["utility"],
 	"description": "Provides live previewing and scene generation for many targets and frameworks.",
-	"version": "1.2.0",
-	"releasenote": "Implemented Exporter.",
+	"version": "1.2.1",
+	"releasenote": "Added notifications and fixed save dialog cancellation crash.",
 	"contributors": ["tienery"]
 }
