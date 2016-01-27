@@ -38,6 +38,8 @@ import hxlive.DateCompare;
 import haxe.Json;
 import haxe.CallStack;
 
+import haxe.FileSystemExtender;
+
 #if telemetry
 import openfl.profiler.Telemetry;
 #end
@@ -82,7 +84,21 @@ class Live extends Sprite
             
             if (result != null)
             {
-                Exporter.export(data, result);
+                var dir = FileSystemExtender.getRootDir(result);
+                if (dir != "" && FileSystem.exists(dir))
+                {
+                    Exporter.export(data, result);
+                }
+                else
+                {
+                    var message = 'The path to the directory: "$dir" does not exist.';
+                    #if windows
+                    Dialogs.message(message, 'Error');
+                    #else
+                    Sys.println(message);
+                    #end
+                }
+                
             }
         }
     }
