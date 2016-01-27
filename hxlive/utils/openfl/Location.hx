@@ -9,24 +9,24 @@ class Location
     public static function setLocationLeftOf(obj:DisplayObject, of:DisplayObject, padding:Float = 2)
     {
         obj.x = of.x - obj.width - padding;
-        obj.y = of.y + (of.height / 2 - obj.height / 2);
+        obj.y = (of.height / 2 - obj.height / 2) + of.y;
     }
     
     public static function setLocationTopOf(obj:DisplayObject, of:DisplayObject, padding:Float = 2)
     {
         obj.y = of.y - obj.height - padding;
-        obj.x = of.x + (of.width / 2 - obj.width / 2);
+        obj.x = (of.width / 2 - obj.width / 2) + of.x;
     }
     
     public static function setLocationRightOf(obj:DisplayObject, of:DisplayObject, padding:Float = 2)
     {
         obj.x = of.x + of.width + padding;
-        obj.y = of.y + (of.height / 2 - obj.height / 2);
+        obj.y = (of.height / 2 - obj.height / 2) + of.y;
     }
     
     public static function setLocationBottomOf(obj:DisplayObject, of:DisplayObject, padding:Float = 2)
     {
-        obj.x = of.x + (of.width / 2 - obj.width / 2);
+        obj.x = (of.width / 2 - obj.width / 2) + of.x;
         obj.y = of.y + of.height + padding;
     }
     
