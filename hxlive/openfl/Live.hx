@@ -132,6 +132,9 @@ class Live extends Sprite
         var configData:Dynamic = Json.parse(Assets.getText(config));
         _file = configData.file;
         
+        if (configData.export_options != null)
+            Exporter.options = configData.export_options;
+        
         #if sys
         data = Json.parse(File.getContent(_file));
         #else

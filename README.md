@@ -5,6 +5,17 @@ HaxeLive is a library that currently supports OpenFL in bringing live preview ca
 
 **Note** `SimpleButton`'s in OpenFL does not function correctly as implemented in our code. We are working on whether or not this is an OpenFL issue or specific to the codebase and find a solution. For now, the code works in version 3.4, so if you need SimpleButton's to function properly, that's the version we recommend to use.
 
+## To Install
+You can install in one of two ways:
+    
+    haxelib install hxlive
+
+Will install the latest stable version.
+
+    haxelib git https://github.com/ColourID/HaxeLive.git
+    
+Will install the latest development version. This may or may not be stable, and there is no guarantee it will work 100%.
+
 ## Using this library
 This library parses JSON-formatted files into generated scenes that can be live-previewed for fast prototyping, as well as redistributed and reused for your projects.
 
