@@ -28,6 +28,7 @@ package hxlive.openfl;
 import haxe.Template;
 import haxe.Json;
 import hxlive.openfl.Exporter.ExportOptions;
+import hxlive.openfl.Exporter.Sizer;
 import hxlive.utils.Color;
 
 #if sys
@@ -39,6 +40,8 @@ class Exporter
     
     private static var __imports:Array<String>;
     private static var __styles:Map<String, Dynamic>;
+    private static var __parentChain:String;
+    private static var locator:Array<Dynamic>;
     
     public static var options:ExportOptions;
     
@@ -53,20 +56,26 @@ class Exporter
             
             __imports = [];
             __styles = new Map<String, Dynamic>();
+            __parentChain = "";
             
             generateImports(data.contents);
             
             var result:Dynamic = { instanceType: data.instanceType };
-            var contents = new Array<ContentItem>();
-            var inits = new Array<Dynamic>();
-            var locator = new Array<Dynamic>();
             
+            locator = [];
+            
+            //Setup imports.
             var imports = new Array<Dynamic>();
             for (i in 0...__imports.length)
                 imports.push( { value: __imports[i] } );
             
             result.imports = imports;
             
+            result.inits = [];
+            result.sizers = [];
+            result.contents = [];
+            
+            //Setup theme for the instance.
             if (data.theme != null)
             {
                 var theme:Dynamic = Json.parse(File.getContent(data.theme));
@@ -85,162 +94,24 @@ class Exporter
                 }
             }
             
-            for (i in 0...data.contents.length)
+            //Setup flow for `this` instance.
             {
-                var item:Dynamic = data.contents[i];
+                var loc:Sizer = {
+                    name: "this",
+                    location:null,
+                    padding:data.padding
+                };
                 
-                if (item.name == null)
+                if (data.flow != null)
                 {
-                    item.name = item.type.charAt(0).toLowerCase()
-                        + item.type.substr(1) + i;
+                    loc.location = flow(data.flow == 0);
+                    
+                    locator.push( { code: getLocationCode(loc) } );
                 }
-                
-                var style:Dynamic = { };
-                
-                if (item.styleName != null)
-                {
-                    style = __styles.get(item.styleName);
-                }
-                
-                if (item.type == "Text")
-                {
-                    if (Reflect.fields(style).length == 0)
-                    {
-                        style.fontFile = item.fontFile;
-                        style.fontSize = item.fontSize;
-                        style.fontColor = Color.getColorValue(item.fontColor);
-                    }
-                    
-                    item.style = style;
-                    
-                    item.type = "TextField";
-                    inits.push( { code: initTextField(item) } );
-                }
-                else if (item.type == "Bitmap")
-                {
-                    if (Reflect.fields(style).length == 0)
-                    {
-                        style.bitmapSource = item.bitmapSource;
-                    }
-                    
-                    item.style = style;
-                    
-                    inits.push( { code: initBitmap(item) } );
-                }
-                else if (item.type == "SimpleButton")
-                {
-                    var usingSpritesheet = (style.type == "spritesheet");
-                    if (usingSpritesheet)
-                    {
-                        item.usingSpritesheet = usingSpritesheet;
-                        
-                        if (item.styleValue[0] != null)
-                            style.upState = item.styleValue[0];
-                        
-                        if (item.styleValue[1] != null)
-                            style.overState = item.styleValue[1];
-                        
-                        if (item.styleValue[2] != null)
-                            style.downState = item.styleValue[2];
-                        
-                        if (item.styleValue[3] != null)
-                            style.hitTestState = item.styleValue[3];
-                    }
-                    else
-                    {
-                        if (item.bmpUpStateSource != null)
-                            style.upState = item.bmpUpStateSource;
-                        
-                        if (item.bmpOverStateSource != null)
-                            style.overState = item.bmpOverStateSource;
-                        
-                        if (item.bmpDownStateSource != null)
-                            style.downState = item.bmpDownStateSource;
-                        
-                        if (item.bmpHitTestStateSource != null)
-                            style.hitTestState = item.bmpHitTestStateSource;
-                    }
-                    
-                    item.style = style;
-                    
-                    inits.push( { code: initSimpleButton(item) } );
-                }
-                
-                contents.push( { name: item.name, type: item.type } );
             }
-            result.contents = contents;
-            result.inits = inits;
             
-            result.useResize = options.useResize;
-            if (options.useResize)
-            {
-                for (i in 0...data.contents.length)
-                {
-                    var item:Dynamic = data.contents[i];
-                    
-                    var data:Sizer = {
-                        name:item.name,
-                        location:null,
-                        first:(i == 0),
-                        width:item.width,
-                        height:item.height,
-                        x:item.x,
-                        y:item.y,
-                        padding:item.padding
-                    };
-                    
-                    if (item.flow != null && item.type == "Sprite")
-                    {
-                        data.location = flow(item.flow == 0);
-                    }
-                    else if (item.align != null)
-                    {
-                        if (Reflect.isObject(item.align))
-                        {
-                            var edge:Edge = switch (item.align.alignment)
-                            {
-                                case 0: Left;
-                                case 1: Top;
-                                case 2: Right;
-                                default: Bottom;
-                            }
-                            data.location = nextTo(item.align.name, item.align.padding, edge);
-                        }
-                        else
-                        {
-                            switch (item.align)
-                            {
-                                case 4:
-                                    data.location = alignCenter;
-                                case 5:
-                                    data.location = centerVertically;
-                                case 6:
-                                    data.location = centerHorizontally;
-                                default:
-                                    var edge:Edge = switch(item.align) {
-                                        case 0 | -1: Left;
-                                        case 1 | -2: Top;
-                                        case 2 | -3: Right;
-                                        default: Bottom;
-                                    }
-                                    if (item.align < 0)
-                                        data.location = screenEdge(edge);
-                                    else
-                                        data.location = align(edge);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (data.x == null)
-                            data.x = 0;
-                        if (data.y == null)
-                            data.y = 0;
-                    }
-                    
-                    locator.push( { code: getLocationCode(data) } );
-                }
-            }
+            generateSpriteCode(result, data);
+            
             result.sizers = locator;
             
             var t = new Template(File.getContent("templates/openfl/Class.txt"));
@@ -254,7 +125,187 @@ class Exporter
         return successful = "SUCCESS";
     }
     
-    public static function getLocationCode(data:Sizer):String {
+    private static function generateSpriteCode(results:Dynamic, data:Dynamic)
+    {
+        var contents = new Array<ContentItem>();
+        var inits = new Array<Dynamic>();
+        
+        //Generate the code for each item in contents.
+        for (i in 0...data.contents.length)
+        {
+            var item:Dynamic = data.contents[i];
+            
+            if (item.name == null)
+            {
+                item.name = item.type.charAt(0).toLowerCase()
+                    + item.type.substr(1) + i;
+            }
+            
+            var style:Dynamic = { };
+            
+            if (item.styleName != null)
+            {
+                style = __styles.get(item.styleName);
+            }
+            
+            if (item.type == "Text")
+            {
+                if (Reflect.fields(style).length == 0)
+                {
+                    style.fontFile = item.fontFile;
+                    style.fontSize = item.fontSize;
+                    style.fontColor = Color.getColorValue(item.fontColor);
+                }
+                
+                item.style = style;
+                
+                item.type = "TextField";
+                inits.push( { code: initTextField(item) } );
+            }
+            else if (item.type == "Bitmap")
+            {
+                if (Reflect.fields(style).length == 0)
+                {
+                    style.bitmapSource = item.bitmapSource;
+                }
+                
+                item.style = style;
+                
+                inits.push( { code: initBitmap(item) } );
+            }
+            else if (item.type == "SimpleButton")
+            {
+                var usingSpritesheet = (style.type == "spritesheet");
+                if (usingSpritesheet)
+                {
+                    item.usingSpritesheet = usingSpritesheet;
+                    
+                    if (item.styleValue[0] != null)
+                        style.upState = item.styleValue[0];
+                    
+                    if (item.styleValue[1] != null)
+                        style.overState = item.styleValue[1];
+                    
+                    if (item.styleValue[2] != null)
+                        style.downState = item.styleValue[2];
+                    
+                    if (item.styleValue[3] != null)
+                        style.hitTestState = item.styleValue[3];
+                }
+                else
+                {
+                    if (item.bmpUpStateSource != null)
+                        style.upState = item.bmpUpStateSource;
+                    
+                    if (item.bmpOverStateSource != null)
+                        style.overState = item.bmpOverStateSource;
+                    
+                    if (item.bmpDownStateSource != null)
+                        style.downState = item.bmpDownStateSource;
+                    
+                    if (item.bmpHitTestStateSource != null)
+                        style.hitTestState = item.bmpHitTestStateSource;
+                }
+                
+                item.style = style;
+                
+                inits.push( { code: initSimpleButton(item) } );
+            }
+            else if (item.type == "Sprite")
+            {   
+                inits.push( { code: initSprite(results, item) } );
+            }
+            
+            contents.push( { name: item.name, type: item.type } );
+        }
+        
+        //Setup location for each object in contents
+        for (i in 0...data.contents.length)
+        {
+            var item:Dynamic = data.contents[i];
+            
+            var loc:Sizer = {
+                name:item.name,
+                location:null,
+                first:(i == 0),
+                width:item.width,
+                height:item.height,
+                x:item.x,
+                y:item.y,
+                padding:item.padding
+            };
+            
+            if (item.flow != null && item.type == "Sprite")
+            {
+                loc.location = flow(item.flow == 0);
+            }
+            else if (item.align != null)
+            {
+                if (Reflect.isObject(item.align))
+                {
+                    var edge:Edge = switch (item.align.alignment)
+                    {
+                        case 0: Left;
+                        case 1: Top;
+                        case 2: Right;
+                        default: Bottom;
+                    }
+                    loc.location = nextTo(item.align.name, item.align.padding, edge);
+                }
+                else
+                {
+                    switch (item.align)
+                    {
+                        case 4:
+                            loc.location = alignCenter;
+                        case 5:
+                            loc.location = centerVertically;
+                        case 6:
+                            loc.location = centerHorizontally;
+                        default:
+                            var edge:Edge = switch(item.align) {
+                                case 0 | -1: Left;
+                                case 1 | -2: Top;
+                                case 2 | -3: Right;
+                                default: Bottom;
+                            }
+                            if (item.align < 0)
+                                loc.location = screenEdge(edge);
+                            else
+                                loc.location = align(edge);
+                    }
+                }
+            }
+            else
+            {
+                if (loc.x == null)
+                    loc.x = 0;
+                if (loc.y == null)
+                    loc.y = 0;
+            }
+            
+            locator.push( { code: getLocationCode(loc) } );
+        }
+        
+        populateResults(results, contents, inits);
+    }
+    
+    private static function populateResults(results:Dynamic, contents:Array<ContentItem>, inits:Array<Dynamic>)
+    {
+        var index = results.contents.length;
+        for (i in 0...contents.length)
+        {
+            results.contents[index++] = contents[i];
+        }
+        
+        index = results.inits.length;
+        for (i in 0...inits.length)
+        {
+            results.inits[index++] = inits[i];
+        }
+    }
+    
+    private static function getLocationCode(data:Sizer):String {
         var result:String = "";
         var name:String = data.name;
         var spaces:String = "";
@@ -313,12 +364,40 @@ class Exporter
         return result;
     }
     
+    private static function initSprite(results:Dynamic, data:Dynamic):String
+    {
+        var result = "";
+        var spaces = "        ";
+        
+        result += '${data.name} = new Sprite();\n';
+        
+        if (__parentChain != "")
+            result += '$spaces$__parentChain.addChild(${data.name});\n';
+        else
+            result += '$spaces addChild(${data.name});\n';
+        
+        if (__parentChain != "")
+            __parentChain += '.${data.name}';
+        else
+            __parentChain += '${data.name}';
+        
+        generateSpriteCode(results, data);
+        
+        if (__parentChain.indexOf('.') > -1)
+            __parentChain = __parentChain.substring(0, __parentChain.lastIndexOf('.'));
+        else
+            __parentChain = "";
+        
+        return result;
+    }
+    
     private static function initSimpleButton(data:Dynamic):String
     {
         if (data.style == null)
             return "";
         
         data.alpha = data.alpha != null ? data.alpha : 1;
+        data.chain = __parentChain;
         
         var t = new Template(File.getContent("templates/openfl/SimpleButton.txt"));
         return t.execute(data);
@@ -330,6 +409,7 @@ class Exporter
             return "";
         
         data.alpha = data.alpha != null ? data.alpha : 1;
+        data.chain = __parentChain;
         
         var t = new Template(File.getContent("templates/openfl/Bitmap.txt"));
         return t.execute(data);
@@ -358,6 +438,7 @@ class Exporter
         data.wordWrap = data.wordWrap != null ? data.wordWrap : false;
         data.alpha = data.alpha != null ? data.alpha : 1;
         data.text = data.text != null ? data.text : "Example Text Field";
+        data.chain = __parentChain;
         
         var t = new Template(File.getContent("templates/openfl/TextField.txt"));
         return t.execute(data);
@@ -389,6 +470,11 @@ class Exporter
                     addArrayItem("openfl.display.SimpleButton");
                     addArrayItem("openfl.display.Bitmap");
                     addArrayItem("openfl.Assets");
+                }
+                else if (item.type == "Sprite")
+                {
+                    if (item.contents != null)
+                        generateImports(item.contents);
                 }
             }
         }

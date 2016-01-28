@@ -20,7 +20,7 @@ class ::instanceType:: extends Sprite
         ::end::
         ::if useResize::
         addEventListener(Event.RESIZE, onResize); ::end::
-        resize();
+        relocate();
     }
     ::if useResize::
     private function onResize(e:Event)
@@ -32,7 +32,7 @@ class ::instanceType:: extends Sprite
             resize();
         }
     } ::end::
-    private function resize()
+    private function relocate()
     {
         ::foreach sizers::
         ::code::

@@ -1,4 +1,5 @@
 ::name:: = new Bitmap(Assets.getBitmapData("::style.bitmapSource::"));
         ::name::.alpha = ::alpha::;
-
-        addChild(::name::);
+        ::if (chain != "")::
+        ::chain::.addChild(::name::); ::else::
+        addChild(::name::); ::end::

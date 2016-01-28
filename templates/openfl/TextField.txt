@@ -8,5 +8,6 @@
         ::name::.text = "::text::";
         ::name::.type = ::fieldType::;
         ::name::.autoSize = ::autoSize::;
-
-        addChild(::name::);
+        ::if (chain != "")::
+        ::chain::.addChild(::name::); ::else::
+        addChild(::name::); ::end::
