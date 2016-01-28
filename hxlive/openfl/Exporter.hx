@@ -40,7 +40,7 @@ class Exporter
     
     private static var __imports:Array<String>;
     private static var __styles:Map<String, Dynamic>;
-    private static var __parentChain:String;
+    private static var __parent:String;
     private static var locator:Array<Dynamic>;
     
     public static var options:ExportOptions;
@@ -56,7 +56,7 @@ class Exporter
             
             __imports = [];
             __styles = new Map<String, Dynamic>();
-            __parentChain = "";
+            __parent = "";
             
             generateImports(data.contents);
             
@@ -371,22 +371,16 @@ class Exporter
         
         result += '${data.name} = new Sprite();\n';
         
-        if (__parentChain != "")
-            result += '$spaces$__parentChain.addChild(${data.name});\n';
+        if (__parent != "")
+            result += '$spaces$__parent.addChild(${data.name});\n';
         else
             result += '$spaces addChild(${data.name});\n';
-        
-        if (__parentChain != "")
-            __parentChain += '.${data.name}';
-        else
-            __parentChain += '${data.name}';
+            
+        __parent = '${data.name}';
         
         generateSpriteCode(results, data);
         
-        if (__parentChain.indexOf('.') > -1)
-            __parentChain = __parentChain.substring(0, __parentChain.lastIndexOf('.'));
-        else
-            __parentChain = "";
+        __parent = "";
         
         return result;
     }
@@ -397,7 +391,7 @@ class Exporter
             return "";
         
         data.alpha = data.alpha != null ? data.alpha : 1;
-        data.chain = __parentChain;
+        data.chain = __parent;
         
         var t = new Template(File.getContent("templates/openfl/SimpleButton.txt"));
         return t.execute(data);
@@ -409,7 +403,7 @@ class Exporter
             return "";
         
         data.alpha = data.alpha != null ? data.alpha : 1;
-        data.chain = __parentChain;
+        data.chain = __parent;
         
         var t = new Template(File.getContent("templates/openfl/Bitmap.txt"));
         return t.execute(data);
@@ -438,7 +432,7 @@ class Exporter
         data.wordWrap = data.wordWrap != null ? data.wordWrap : false;
         data.alpha = data.alpha != null ? data.alpha : 1;
         data.text = data.text != null ? data.text : "Example Text Field";
-        data.chain = __parentChain;
+        data.chain = __parent;
         
         var t = new Template(File.getContent("templates/openfl/TextField.txt"));
         return t.execute(data);
