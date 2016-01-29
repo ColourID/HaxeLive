@@ -131,20 +131,6 @@ class SceneGen
                 sprite.addChild(obj);
             }
             
-            if (sp.flow != null)
-            {
-                var padding = 2;
-                
-                if (sp.padding != null)
-                    padding = sp.padding;
-                
-                switch (sp.flow)
-                {
-                    case 0: Flow.flowFromTop(sprite, padding);
-                    case 1: Flow.flowFromLeft(sprite, padding);
-                }
-            }
-            
             //Set the locations and sizes of each object in the sprite
             for (i in 0...sprite.numChildren)
             {
@@ -226,6 +212,20 @@ class SceneGen
                 if (items[i].y != null)
                     obj.y = items[i].y;
                 
+            }
+            
+            if (sp.flow != null)
+            {
+                var padding = 2;
+                
+                if (sp.padding != null)
+                    padding = sp.padding;
+                
+                switch (sp.flow)
+                {
+                    case 0: Flow.flowFromTop(sprite, padding);
+                    case 1: Flow.flowFromLeft(sprite, padding);
+                }
             }
         }
         

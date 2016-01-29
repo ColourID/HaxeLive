@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": ["utility"],
 	"description": "Provides live previewing and scene generation for many targets and frameworks.",
-	"version": "1.2.1",
-	"releasenote": "Added notifications and fixed save dialog cancellation crash.",
+	"version": "1.2.2",
+	"releasenote": "Added support for parent chaining, plus bug fixes.",
 	"contributors": ["tienery"]
 }

@@ -2,5 +2,6 @@ bin/
 */bin/
 hxlive/editor/*
 tests/simple/assets/img/*
-HaxeLive.zip
+*.zip
+*.tar.gz
 execs/
