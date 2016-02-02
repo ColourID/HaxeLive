@@ -29,7 +29,7 @@ class ::instanceType:: extends Sprite
             _inited = true;
         else
         {
-            resize();
+            relocate();
         }
     } ::end::
     private function relocate()
