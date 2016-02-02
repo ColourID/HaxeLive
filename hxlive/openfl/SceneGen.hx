@@ -31,6 +31,7 @@ class SceneGen
     private static var __styles:Dynamic;
     private static var __spritesheet:BitmapData;
     private static var __spritemap:Map<String, BitmapData>;
+    private static var __properties:Array<Property>;
     
     public static function generate(data:Dynamic):Sprite
     {
@@ -39,6 +40,9 @@ class SceneGen
         
         if (__spritemap == null)
             __spritemap = new Map<String, BitmapData>();
+        
+        if (__properties == null)
+            __properties = [];
         
         return createSprite(data);
     }
@@ -237,10 +241,10 @@ class SceneGen
     
     private static function createSimpleButton(smb:Dynamic, style:Dynamic = null):SimpleButton
     {
-        var upState:Bitmap = smb.bmpUpStateSource != null ? createBitmap({ bitmapSource: smb.bmpUpStateSource }) : null;
-        var overState:Bitmap = smb.bmpOverStateSource != null ? createBitmap({ bitmapSource: smb.bmpOverStateSource }) : null;
-        var downState:Bitmap = smb.bmpDownStateSource != null ? createBitmap({ bitmapSource: smb.bmpDownStateSource }) : null;
-        var hitTestState:Bitmap = smb.bmpHitTestStateSource != null ? createBitmap({ bitmapSource: smb.bmpHitTestStateSource }) : null;
+        var upState:Bitmap = smb.upStateSource != null ? createBitmap({ bitmapSource: smb.upStateSource }) : null;
+        var overState:Bitmap = smb.overStateSource != null ? createBitmap({ bitmapSource: smb.overStateSource }) : null;
+        var downState:Bitmap = smb.downStateSource != null ? createBitmap({ bitmapSource: smb.downStateSource }) : null;
+        var hitTestState:Bitmap = smb.hitTestStateSource != null ? createBitmap({ bitmapSource: smb.hitTestStateSource }) : null;
         
         if (style != null)
         {

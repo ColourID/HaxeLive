@@ -112,6 +112,7 @@ class Exporter
             
             generateSpriteCode(result, data);
             
+            result.useResize = options.useResize;
             result.sizers = locator;
             
             var t = new Template(File.getContent("templates/openfl/Class.txt"));
@@ -194,17 +195,17 @@ class Exporter
                 }
                 else
                 {
-                    if (item.bmpUpStateSource != null)
-                        style.upState = item.bmpUpStateSource;
+                    if (item.upStateSource != null)
+                        style.upState = item.upStateSource;
                     
-                    if (item.bmpOverStateSource != null)
-                        style.overState = item.bmpOverStateSource;
+                    if (item.overStateSource != null)
+                        style.overState = item.overStateSource;
                     
-                    if (item.bmpDownStateSource != null)
-                        style.downState = item.bmpDownStateSource;
+                    if (item.downStateSource != null)
+                        style.downState = item.downStateSource;
                     
-                    if (item.bmpHitTestStateSource != null)
-                        style.hitTestState = item.bmpHitTestStateSource;
+                    if (item.hitTestStateSource != null)
+                        style.hitTestState = item.hitTestStateSource;
                 }
                 
                 item.style = style;
@@ -473,6 +474,7 @@ class Exporter
             }
         }
 
+        addArrayItem("openfl.display.Sprite");
         addArrayItem("hxlive.utils.openfl.Alignment");
         addArrayItem("hxlive.utils.openfl.Flow");
         addArrayItem("hxlive.utils.openfl.Location");
