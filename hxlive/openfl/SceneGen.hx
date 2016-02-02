@@ -31,7 +31,6 @@ class SceneGen
     private static var __styles:Dynamic;
     private static var __spritesheet:BitmapData;
     private static var __spritemap:Map<String, BitmapData>;
-    private static var __properties:Array<Property>;
     
     public static function generate(data:Dynamic):Sprite
     {
@@ -40,9 +39,6 @@ class SceneGen
         
         if (__spritemap == null)
             __spritemap = new Map<String, BitmapData>();
-        
-        if (__properties == null)
-            __properties = [];
         
         return createSprite(data);
     }
