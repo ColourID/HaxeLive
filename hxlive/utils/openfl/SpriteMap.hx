@@ -1,5 +1,7 @@
 package hxlive.utils.openfl;
 import openfl.display.BitmapData;
+import openfl.geom.Rectangle;
+import openfl.geom.Point;
 import openfl.Assets;
 import haxe.Json;
 
@@ -11,7 +13,7 @@ class SpriteMap
     
     public function new(theme:String) 
     {
-        var themeData:Dynamic = Json.parse(Assets.getFont(theme));
+        var themeData:Dynamic = Json.parse(Assets.getText(theme));
         
         var fields = Reflect.fields(themeData);
         var source = "";

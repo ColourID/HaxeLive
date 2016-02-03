@@ -452,6 +452,7 @@ class Exporter
                     addArrayItem("openfl.text.TextField");
                     addArrayItem("openfl.text.TextFieldAutoSize");
                     addArrayItem("openfl.text.TextFieldType");
+                    addArrayItem("openfl.text.TextFormat");
                     addArrayItem("openfl.Assets");
                 }
                 else if (item.type == "Bitmap")

@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": ["utility"],
 	"description": "Provides live previewing and scene generation for many targets and frameworks.",
-	"version": "1.2.3",
-	"releasenote": "Changed name convention for SimpleButton's and some bug fixes.",
+	"version": "1.2.4",
+	"releasenote": "Small fix.",
 	"contributors": ["tienery"]
 }
