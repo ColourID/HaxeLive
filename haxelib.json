@@ -5,6 +5,6 @@
 	"tags": ["utility"],
 	"description": "Provides live previewing and scene generation for many targets and frameworks.",
 	"version": "1.2.4",
-	"releasenote": "Small fix.",
+	"releasenote": "Added stdin/out options plus some bug fixes.",
 	"contributors": ["tienery"]
 }

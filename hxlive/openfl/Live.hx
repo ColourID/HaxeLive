@@ -151,7 +151,6 @@ class Live extends Sprite
     private function readChar(i:Int)
     {
         var char = String.fromCharCode(i);
-        _inputResult += char;
         
         if (char == "\n")
         {
@@ -163,6 +162,8 @@ class Live extends Sprite
             
             _inputResult = "";
         }
+        else
+            _inputResult += char;
     }
     
     private function onEnter(e:Event):Void 

@@ -4,7 +4,7 @@
     <assets path="assets/img" rename="img" />
     <assets path="templates" />
     
-    <section if ="live_client">
+    <section if="live_client">
         <assets path="tests/simple" />
     </section>
     
