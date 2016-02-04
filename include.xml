@@ -4,6 +4,10 @@
     <assets path="assets/img" rename="img" />
     <assets path="templates" />
     
+    <section if ="live_client">
+        <assets path="tests/simple" />
+    </section>
+    
     <haxelib name="linc_dialogs" />
     <haxelib name="actuate" />
     

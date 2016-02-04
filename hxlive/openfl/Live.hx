@@ -63,6 +63,9 @@ class Live extends Sprite
     private var _notified:Bool;
     private var data:Dynamic;
     
+    private var _inputResult:String;
+    private var _isFrozen:Bool;
+    
 	public function new(config:String)
     {
         super();
@@ -145,8 +148,30 @@ class Live extends Sprite
             _activeFiles.push(new FileTimeInfo(_configFile, Date.now()));
     }
     
+    private function readChar(i:Int)
+    {
+        var char = String.fromCharCode(i);
+        _inputResult += char;
+        
+        if (char == "\n")
+        {
+            switch (_inputResult)
+            {
+                case "FREEZE": _isFrozen = true;
+                case "UNFREEZE": _isFrozen = false;
+            }
+            
+            _inputResult = "";
+        }
+    }
+    
     private function onEnter(e:Event):Void 
     {
+        readChar(Sys.getChar(false));
+        
+        if (_isFrozen)
+            return;
+    
         #if sys
         var requireChange = false;
         
