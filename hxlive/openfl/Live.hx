@@ -2,7 +2,7 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2015 tienery
+Copyright (c) 2016 Colour Multimedia Enterprises
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -228,38 +228,6 @@ class Live extends Sprite
             }
         }
         #end
-    }
-
-    private function setupLinkedFiles(file:String)
-    {
-        var parsed:Dynamic = Json.parse(Assets.getText(file));
-        
-        _activeFiles.push(new FileTimeInfo(file, Date.now()));
-        
-        if (parsed.theme != null)
-        {
-            _activeFiles.push(new FileTimeInfo(parsed.theme, Date.now()));
-        }
-        
-        if (parsed.requires != null)
-        {
-            for (i in 0...parsed.requires.length)
-                setupLinkedFiles(parsed.requires[i]);
-        }
-    }
-    
-}
-
-class FileTimeInfo
-{
-    
-    public var file:String;
-    public var time:Date;
-    
-    public function new (file:String, time:Date)
-    {
-        this.time = time;
-        this.file = file;
     }
     
 }

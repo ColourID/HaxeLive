@@ -1,0 +1,5 @@
+-cp ./
+-cpp bin
+-main Main
+-lib hxWidgets
+-lib hxlive

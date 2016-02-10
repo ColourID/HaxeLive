@@ -26,20 +26,16 @@ SOFTWARE.
 
 package hxlive;
 
-class DateCompare
+class FileTimeInfo
 {
-
-	public static function compare(d1:Date, d2:Date)
-	{
-		var d1Result = d1.getSeconds() + d1.getMinutes() * 60 + d1.getHours() * 3600;
-		var d2Result = d2.getSeconds() + d2.getMinutes() * 60 + d2.getHours() * 3600;
-        
-		if (d1Result > d2Result)
-			return 1;
-		else if (d1Result < d2Result)
-			return -1;
-		else
-			return 0;
-	}
-	
+    
+    public var file:String;
+    public var time:Date;
+    
+    public function new (file:String, time:Date)
+    {
+        this.time = time;
+        this.file = file;
+    }
+    
 }

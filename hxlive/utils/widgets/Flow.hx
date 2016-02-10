@@ -23,23 +23,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 */
+package hxlive.utils.widgets;
+import hx.widgets.*;
 
-package hxlive;
-
-class DateCompare
+class Flow
 {
 
-	public static function compare(d1:Date, d2:Date)
-	{
-		var d1Result = d1.getSeconds() + d1.getMinutes() * 60 + d1.getHours() * 3600;
-		var d2Result = d2.getSeconds() + d2.getMinutes() * 60 + d2.getHours() * 3600;
+    public static function flowFromTop(parent:Window, padding:Int = 2)
+    {
+        var totalHeight = 0;
+        var children = parent.getChildren();
         
-		if (d1Result > d2Result)
-			return 1;
-		else if (d1Result < d2Result)
-			return -1;
-		else
-			return 0;
-	}
-	
+        for (i in 0...children.length)
+        {
+            var w:Window = children[i];
+            if (i == 0)
+                w.move(padding, padding);
+            else
+                w.move(padding, totalHeight + padding);
+            
+            totalHeight += w.getPosition().y + w.getSize().height;
+        }
+    }
+    
+    public static function flowFromLeft(parent:Window, padding:Int = 2)
+    {
+        var totalWidth = 0;
+        var children = parent.getChildren();
+        
+        for (i in 0...children.length)
+        {
+            var w:Window = children[i];
+            if (i == 0)
+                w.move(padding, padding);
+            else
+                w.move(totalWidth + padding, padding);
+            
+            totalWidth += w.getPosition().x + w.getSize().width;
+        }
+    }
+    
 }

@@ -2,7 +2,7 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2015 tienery
+Copyright (c) 2016 Colour Multimedia Enterprises
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,60 +24,46 @@ SOFTWARE.
 
 */
 
-package hxlive.utils;
+package hxlive.utils.widgets;
+import hx.widgets.*;
 
-class StringBuilder
+class Alignment
 {
 
-    @:noCompletion private var value:String;
-    
-    private var _eol:String;
-    public var eol(get, set):String;
-    function get_eol() return _eol;
-    function set_eol(val) 
+    public static function alignLeft(obj:Window, padding:Int = 2)
     {
-        if (val != "\n" || val != "\r\n")
-            return _eol = "\n";
-        else
-            return _eol = val;
+        obj.move(padding, obj.getPosition().y);
     }
     
-    public function new(defaultValue:String) 
+    public static function alignRight(obj:Window, padding:Int = 2)
     {
-        this.value = defaultValue;
+        obj.move(obj.getParent().getSize().width - obj.getSize().width - padding, obj.getPosition().y);
     }
     
-    public function appendLine(value:String)
+    public static function alignTop(obj:Window, padding:Int = 2)
     {
-        this.value += value + eol;
+        obj.move(obj.getPosition().x, padding);
     }
     
-    public function appendCharLine(code:Int)
+    public static function alignBottom(obj:Window, padding:Int = 2)
     {
-        value += String.fromCharCode(code) + eol;
+        obj.move(obj.getPosition().x, obj.getParent().getSize().height - obj.getSize().height - padding);
     }
     
-    public function appendValue(value:String)
+    public static function alignCenter(obj:Window)
     {
-        this.value += value;
+        centerHorizontally(obj);
+        centerVertically(obj);
     }
     
-    public function appendChar(code:Int)
+    public static function centerVertically(obj:Window)
     {
-        value += String.fromCharCode(code);
+        obj.move(obj.getPosition().x, cast ((obj.getParent().getSize().height - obj.getSize().height) / 2));
     }
     
-    public function toString(?end:Int)
+    public static function centerHorizontally(obj:Window)
     {
-        if (end != null)
-        {
-            if (end > 0)
-                return value.substring(0, end + 1);
-            else
-                return value;
-        }
-        else
-            return value;
+        obj.move(cast ((obj.getParent().getSize().width - obj.getSize().width) / 2), obj.getPosition().y);
     }
     
 }
