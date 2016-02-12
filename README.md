@@ -7,6 +7,9 @@ HaxeLive is a library that currently supports OpenFL in bringing live preview ca
 
 **Note** If using the hxWidgets backend, please use the repository found [here](https://github.com/ianharrigan/hxWidgets).
 
+## Need Assistance?
+You can submit a post on the official [Colour ID forums](http://forums.colour-id.co.uk/) for technical assistance setting up or acquiring help on HaxeLive or anything related to it.
+
 ## To Install
 You can install in one of two ways:
     
@@ -62,7 +65,7 @@ When using the hxWidgets backend, you are required to manually click the 'Update
 
 The hxWidgets backend does not yet have an Exporter.
 
-You can test the example found under `tests/widgets`. On Windows, you will need to copy the *.dll files from the repository under `wxWidgets/windows/[MSVC version]/[32 or 64-bit]/dll/` into the `bin` directory. The `Build.bat` file found in the test folder can be used to copy these dll files, you will need to modify it to point to the repository and the correct folder.
+You can test the example found under `tests/widgets`. On Windows, you will need to copy the *.dll files from the hxWidgets repository under `wxWidgets/windows/[MSVC version]/[32 or 64-bit]/dll/` into the `bin` directory. The `Build.bat` file found in the test folder can be used to copy these dll files, you will need to modify it to point to the repository and the correct folder.
 
 **Warning**
 If, on Windows, hxWidgets does not build your application, one of the reasons may be because the Build.xml file in the root of the repository is not choosing the correct MSVC compiler version that would replace the `${vc}` with the appropriate value. This can occur if you have more than one version of the compiler installed on your computer. To fix this, simply modify the Build.xml file and replace the `${vc}` value with the version of the compiler you want to use.
