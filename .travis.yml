@@ -4,17 +4,18 @@ haxe:
     - "3.2.1"
 
 env:
-    - TARGET:cpp
+    - TARGET:openfl
     - TARGET:widgets
 
 install:
     - mkdir -p ~/haxelib
     - haxelib setup ~/haxelib
-    - if [[ $TARGET == 'cpp' ]]; then haxelib install openfl 3.4.0 && haxelib install lime 2.7.0 ; fi
+    - if [[ $TARGET == 'openfl' ]]; then haxelib install openfl 3.4.0 ; fi
+    - if [[ $TARGET == 'openfl' ]]; haxelib install lime 2.7.0 ; fi
     - if [[ $TARGET == 'widgets' ]]; then haxelib git hxWidgets https://github.com/tienery/hxWidgets.git ; fi
     - haxelib git linc_dialogs https://github.com/snowkit/linc_dialogs.git
     - haxelib dev hxlive $(pwd)
 
 script:
-    - if [[ $TARGET == 'cpp' ]]; then haxelib run openfl build tests/simple/project.xml windows ; fi
+    - if [[ $TARGET == 'openfl' ]]; then haxelib run openfl build tests/simple/project.xml windows ; fi
     - if [[ $TARGET == 'widgets' ]]; then haxe tests/widgets/build.hxml ; fi
