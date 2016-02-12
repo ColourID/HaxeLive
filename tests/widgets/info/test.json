@@ -1,0 +1,22 @@
+{
+    "contents": [
+        {
+            "id": 1,
+            "type": "Label",
+            "name": "lblText",
+            "text": "Hello, there!",
+            "x": 5,
+            "y": 5
+        },
+        {
+            "id": 2,
+            "type": "Text",
+            "name": "txtValue",
+            "align": {
+                "id": 1,
+                "alignment": 2,
+                "padding": 2
+            }
+        }
+    ]
+}

@@ -65,36 +65,4 @@ class Location
         obj.move(cast (((ofSize.width - objSize.width) / 2) + ofPos.x), cast (ofPos.y + ofSize.height + padding));
     }
     
-    public static inline function screenFromTop(obj:Window, offset:Int = 0)
-	{
-        var root = obj.getRoot();
-        
-        obj.move(cast ((root.getClientSize().width - obj.getSize().width) / 2), offset);
-	}
-    
-    public static inline function screenFromLeft(obj:Window, offset:Int = 0)
-    {
-        var root = obj.getRoot();
-        
-        obj.move(offset, cast ((root.getClientSize().height - obj.getSize().height) / 2));
-    }
-    
-    public static inline function screenFromRight(obj:Window, offset:Int = 0)
-    {
-        var root = obj.getRoot();
-        var rootSize = root.getClientSize();
-        var objSize = obj.getSize();
-        
-        obj.move(cast (rootSize.width - objSize.width + offset), cast ((rootSize.height - objSize.height) / 2));
-    }
-    
-    public static inline function screenFromBottom(obj:Window, offset:Int = 0)
-    {
-        var root = obj.getRoot();
-        var rootSize = root.getClientSize();
-        var objSize = obj.getSize();
-        
-        obj.move(cast ((rootSize.width - objSize.width) / 2), cast (rootSize.height - objSize.height + offset));
-    }
-    
 }

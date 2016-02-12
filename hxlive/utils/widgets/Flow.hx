@@ -32,7 +32,7 @@ class Flow
     public static function flowFromTop(parent:Window, padding:Int = 2)
     {
         var totalHeight = 0;
-        var children = parent.getChildren();
+        var children = parent.children;
         
         for (i in 0...children.length)
         {
@@ -49,7 +49,7 @@ class Flow
     public static function flowFromLeft(parent:Window, padding:Int = 2)
     {
         var totalWidth = 0;
-        var children = parent.getChildren();
+        var children = parent.children;
         
         for (i in 0...children.length)
         {

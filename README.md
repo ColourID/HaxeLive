@@ -5,6 +5,8 @@ HaxeLive is a library that currently supports OpenFL in bringing live preview ca
 
 **Note** `SimpleButton`'s in OpenFL does not function correctly as implemented in our code. We are working on whether or not this is an OpenFL issue or specific to the codebase and find a solution. For now, the code works in version 3.4, so if you need SimpleButton's to function properly, that's the version we recommend to use.
 
+**Note** If using the hxWidgets backend, please use the repository found [here](https://github.com/tienery/hxWidgets) until further notice, as some functionality required by this library does not currently exist in the main repository.
+
 ## To Install
 You can install in one of two ways:
     
@@ -19,6 +21,7 @@ Will install the latest development version. This may or may not be stable, and 
 ## Using this library
 This library parses JSON-formatted files into generated scenes that can be live-previewed for fast prototyping, as well as redistributed and reused for your projects.
 
+### OpenFL Backend
 In Main.hx, we have the following code to help us with the live preview capabilities:
     
     import hxlive.Live;
@@ -53,6 +56,16 @@ An example of the configuration file may look something like this:
 All of the parsing, scene generation and previewing is done automatically.
 
 Once you have designed an interface you like, you can use the `SceneGen` class, followed by the `generate` function that takes the parsed data from a JSON file.
+
+### hxWidgets Backend
+When using the hxWidgets backend, you are required to manually click the 'Update' button found at the bottom of the Window in order for the interface to be updated with the latest changes of the JSON file(s). This is because a solution has not yet been found to enable immediate feedback.
+
+The hxWidgets backend does not yet have an Exporter.
+
+You can test the example found under `tests/widgets`. On Windows, you will need to copy the *.dll files from the repository under `wxWidgets/windows/[MSVC version]/[32 or 64-bit]/dll/` into the `bin` directory. The `Build.bat` file found in the test folder can be used to copy these dll files, you will need to modify it to point to the repository and the correct folder.
+
+**Warning**
+If, on Windows, hxWidgets does not build your application, one of the reasons may be because the Build.xml file in the root of the repository is not choosing the correct MSVC compiler version that would replace the `${vc}` with the appropriate value. This can occur if you have more than one version of the compiler installed on your computer. To fix this, simply modify the Build.xml file and replace the `${vc}` value with the version of the compiler you want to use.
 
 ## Exporting
 You can now export what you see on the screen into usable Haxe source code to use in your projects.

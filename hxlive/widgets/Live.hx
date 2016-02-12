@@ -31,7 +31,7 @@ import haxe.Json;
 
 import hx.widgets.*;
 
-import cpp.vm.Thread;
+import hxlive.utils.widgets.Alignment;
 
 class Live
 {
@@ -41,14 +41,15 @@ class Live
     private var __mainContent:Panel;
     private var __clientWidth:Int;
     private var __clientHeight:Int;
+    private var __menuBar:MenuBar;
+    private var data:Dynamic;
+    private var menuData:Dynamic;
     
-    private var _running:Bool;
     private var _lastTime:Date;
     private var _cTime:Date;
     private var _file:String;
     private var _configFile:String;
     private var _activeFiles:Array<FileTimeInfo>;
-    private var data:Dynamic;
     
     public function new(config:String)
     {
@@ -60,28 +61,24 @@ class Live
         __mainFrame.setSize( -1, -1, -1, -1);
         __mainFrame.setClientSize(800, 600);
         __mainFrame.bind(EventType.CLOSE_WINDOW, function(e:Event) {
-            _running = false;
-            
             if (__mainContent != null)
                 __mainContent.destroy();
             
             __mainFrame.destroy();
         });
         
+        __menuBar = new MenuBar();
+        __mainFrame.setMenuBar(__menuBar);
+        
         __clientWidth = 800;
         __clientHeight = 600;
-        
-        __mainContent = new Panel(__mainFrame);
-        __mainContent.setSize(0, 0, __clientWidth, __clientHeight);
         
         _lastTime = Date.now();
         _activeFiles = [];
         
         _configFile = config;
         
-        setupConfig(config);
-        
-        
+        update();
         
         __app.run();
         __app.exit();
@@ -91,6 +88,7 @@ class Live
     {
         var configData:Dynamic = Json.parse(File.getContent(config));
         _file = configData.file;
+        menuData = configData.menu;
         
         data = Json.parse(File.getContent(_file));
 
@@ -98,63 +96,39 @@ class Live
             _activeFiles.push(new FileTimeInfo(_configFile, Date.now()));
     }
     
-    private function processEvents()
+    private function update()
     {
-        Sys.sleep(0.1);
+        if (__mainContent != null)
+            __mainContent.destroyChildren();
+        else
+            __mainContent = new Panel(__mainFrame);
         
-        if (checkFileState())
+        __mainContent.setSize(0, 0, __clientWidth, __clientHeight);
+        
+        __menuBar = new MenuBar();
+        __mainFrame.setMenuBar(__menuBar);
+        
+        setupConfig(_configFile);
+        
+        SceneGen.generate(data, __mainContent);
+        
+        if (menuData != null)
         {
-            try
+            for (i in 0...menuData.length)
             {
-                __mainContent = new Panel(__mainFrame);
-                __mainContent.setSize(0, 0, __clientWidth, __clientHeight);
-                
-                SceneGen.generate(data, __mainContent);
-            }
-            catch (msg:String)
-            {
-                trace(msg);
+                SceneGen.createMenu(__menuBar, menuData[i]);
             }
         }
         
-        if (_running)
-            processEvents();
+        var btnUpdate = new Button(__mainContent, "Update");
+        Alignment.alignBottom(btnUpdate, 5);
+        Alignment.centerHorizontally(btnUpdate);
+        
+        btnUpdate.bind(EventType.BUTTON, function(e:Event)
+        {
+            update();
+        });
     }
     
-    private function checkFileState()
-    {
-        var requireChange = false;
-        
-        _cTime = FileSystem.stat(_file).mtime;
-        
-        if (DateCompare.compare(_cTime, _lastTime) != 0)
-        {
-            _lastTime = _cTime;
-            
-            data = Json.parse(File.getContent(_file));
-            
-            requireChange = true;
-        }
-        
-        for (i in 0..._activeFiles.length)
-        {
-            if (requireChange)
-                break;
-            
-            var mtime = FileSystem.stat(_activeFiles[i].file).mtime;
-            
-            if (DateCompare.compare(mtime, _activeFiles[i].time) != 0)
-            {
-                _activeFiles[i].time = mtime;
-                
-                if (_activeFiles[i].file == _configFile)
-                    setupConfig(_configFile);
-                
-                requireChange = true;
-            }
-        }
-        
-        return requireChange;
-    }
     
 }

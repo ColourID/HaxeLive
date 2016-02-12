@@ -170,14 +170,6 @@ class SceneGen
                     {
                         switch (item.align)
                         {
-                            case -4:
-                                Location.screenFromBottom(obj, padding);
-                            case -3:
-                                Location.screenFromRight(obj, padding);
-                            case -2:
-                                Location.screenFromTop(obj, padding);
-                            case -1:
-                                Location.screenFromLeft(obj, padding);
                             case 0:
                                 Alignment.alignLeft(obj, padding);
                             case 1:
@@ -321,9 +313,9 @@ class SceneGen
     public static function createMenu(mb:MenuBar, item:Dynamic):Void
     {
         if (item.title == null)
-            return null;
+            return;
         
-        var menu:Menu = new Menu(item.title);
+        var menu:Menu = new Menu();
         
         if (item.items != null)
         {
@@ -334,10 +326,12 @@ class SceneGen
                 
                 if (obj.iconSource != null)
                     menuitem.setBitmap(Bitmap.fromHaxeBytes(File.getBytes(obj.iconSource)));
+                
+                menu.append(menuitem);
             }
         }
         
-        mb.append(menu, "");
+        mb.append(menu, item.title);
     }
     
     private static function createImageList(item:Dynamic):Void
