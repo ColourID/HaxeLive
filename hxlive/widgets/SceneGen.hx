@@ -237,6 +237,13 @@ class SceneGen
     private static function createStaticBox(parent:Window, item:Dynamic):StaticBox
     {
         var sb = new StaticBox(parent, item.text, item.id != null ? item.id : -1);
+        
+        if (item.contents != null)
+        {
+            for (i in 0...item.contents.length)
+                createWindow(item.contents[i], sb);
+        }
+        
         return sb;
     }
     
