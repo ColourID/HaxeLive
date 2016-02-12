@@ -11,7 +11,7 @@ install:
     - mkdir -p ~/haxelib
     - haxelib setup ~/haxelib
     - if [[ $TARGET == 'openfl' ]]; then haxelib install openfl 3.4.0 ; fi
-    - if [[ $TARGET == 'openfl' ]]; haxelib install lime 2.7.0 ; fi
+    - if [[ $TARGET == 'openfl' ]]; then haxelib install lime 2.7.0 ; fi
     - if [[ $TARGET == 'widgets' ]]; then haxelib git hxWidgets https://github.com/tienery/hxWidgets.git ; fi
     - haxelib git linc_dialogs https://github.com/snowkit/linc_dialogs.git
     - haxelib dev hxlive $(pwd)
