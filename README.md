@@ -5,7 +5,7 @@ HaxeLive is a library that currently supports OpenFL in bringing live preview ca
 
 **Note** `SimpleButton`'s in OpenFL does not function correctly as implemented in our code. We are working on whether or not this is an OpenFL issue or specific to the codebase and find a solution. For now, the code works in version 3.4, so if you need SimpleButton's to function properly, that's the version we recommend to use.
 
-**Note** If using the hxWidgets backend, please use the repository found [here](https://github.com/tienery/hxWidgets) until further notice, as some functionality required by this library does not currently exist in the main repository.
+**Note** If using the hxWidgets backend, please use the repository found [here](https://github.com/ianharrigan/hxWidgets).
 
 ## To Install
 You can install in one of two ways:
