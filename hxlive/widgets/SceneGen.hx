@@ -259,6 +259,13 @@ class SceneGen
     private static function createScrolledWindow(parent:Window, item:Dynamic):ScrolledWindow
     {
         var scr = new ScrolledWindow(parent, item.style != null ? item.style : 0, item.id != null ? item.id : -1);
+        
+        if (item.contents != null)
+        {
+            for (i in 0...item.contents.length)
+                createWindow(item.contents[i], scr);
+        }
+        
         return scr;
     }
     
