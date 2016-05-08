@@ -88,6 +88,7 @@ class Exporter
                     if (s.type == "spritesheet")
                     {
                         result.theme = data.theme;
+                        result.usingSpritesheet = true;
                     }
                     
                     __styles.set(styles[i], s);
