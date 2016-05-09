@@ -58,9 +58,11 @@ class Live extends Sprite
     private var _lastTime:Date;
     private var _cTime:Date;
     private var _file:String;
+    private var _previousFile:String;
     private var _configFile:String;
     private var _activeFiles:Array<FileTimeInfo>;
     private var _notified:Bool;
+    private var _notifyVersion:Bool;
     private var data:Dynamic;
     
     private var _inputResult:String;
@@ -72,6 +74,8 @@ class Live extends Sprite
         
         _lastTime = Date.now();
         _activeFiles = [];
+        _notified = false;
+        _notifyVersion = false;
         
         _configFile = config;
         
@@ -102,6 +106,19 @@ class Live extends Sprite
     
     private function stage_onKeyUp(e:KeyboardEvent):Void
     {
+        if (e.keyCode == Keyboard.B)
+        {
+            if (hasEventListener(Event.ENTER_FRAME))
+                removeEventListener(Event.ENTER_FRAME, onEnter);
+            
+            _activeFiles = [];
+            setupConfig(_configFile);
+            
+            redraw();
+            
+            addEventListener(Event.ENTER_FRAME, onEnter);
+        }
+        
         if (e.keyCode == Keyboard.E && e.ctrlKey)
         {
             var result = Dialogs.save("Export...", { ext: "hx", desc: "Haxe source file" } );
@@ -125,7 +142,6 @@ class Live extends Sprite
                     var message = 'The path to the directory: "$dir" does not exist.';
                     displayMessage(message, Color.red());
                 }
-                
             }
         }
     }
@@ -148,31 +164,8 @@ class Live extends Sprite
             _activeFiles.push(new FileTimeInfo(_configFile, Date.now()));
     }
     
-    private function readChar(i:Int)
-    {
-        var char = String.fromCharCode(i);
-        
-        if (char == "\n")
-        {
-            switch (_inputResult)
-            {
-                case "FREEZE": _isFrozen = true;
-                case "UNFREEZE": _isFrozen = false;
-            }
-            
-            _inputResult = "";
-        }
-        else
-            _inputResult += char;
-    }
-    
     private function onEnter(e:Event):Void 
     {
-        readChar(Sys.getChar(false));
-        
-        if (_isFrozen)
-            return;
-    
         #if sys
         var requireChange = false;
         
@@ -209,14 +202,18 @@ class Live extends Sprite
         {
             try
             {
-                var content = SceneGen.generate(data);
-                removeChildren();
-                addChild(content);
+                redraw();
                 
                 if (!_notified)
                 {
                     _notified = true;
                     activateNotify();
+                }
+                
+                if (!_notifyVersion)
+                {
+                    _notifyVersion = true;
+                    displayMessage("HaxeLive 1.3.1 makes small improvements. You can now use 'B' to force redraw everything.", Color.green());
                 }
                 
                 requireChange = false;
@@ -228,6 +225,13 @@ class Live extends Sprite
             }
         }
         #end
+    }
+    
+    private function redraw()
+    {
+        var content = SceneGen.generate(data);
+        removeChildren();
+        addChild(content);
     }
     
 }
