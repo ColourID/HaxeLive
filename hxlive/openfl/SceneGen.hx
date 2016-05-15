@@ -167,10 +167,16 @@ class SceneGen
                     padding = items[i].padding;
                 
                 if (items[i].width != null)
-                    obj.width = items[i].width;
+                {
+                    if (items[i].width > -1)
+                        obj.width = items[i].width;
+                }
                 
                 if (items[i].height != null)
-                    obj.height = items[i].height;
+                {
+                    if (items[i].height > -1)
+                        obj.height = items[i].height;
+                }
                 
                 if (items[i].flow != null && Std.is(obj, Sprite))
                 {
